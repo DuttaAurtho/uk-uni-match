@@ -1,13 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function Home() {
-  const [form, setForm] = useState({ gpa: "", ielts: "", budget: "" });
+  const [form, setForm] = useState({
+    gpa: "",
+    ielts: "",
+    budget: "",
+    course: "",
+    city: "",
+  });
   const [results, setResults] = useState(null);
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [courses, setCourses] = useState([]);
+  const [cities, setCities] = useState([]);
+
+  // Load course/city options once, for the dropdowns
+  useEffect(() => {
+    async function loadFilters() {
+      try {
+        const [coursesRes, citiesRes] = await Promise.all([
+          fetch(`${API_URL}/courses`),
+          fetch(`${API_URL}/cities`),
+        ]);
+        const coursesData = await coursesRes.json();
+        const citiesData = await citiesRes.json();
+        setCourses(coursesData.courses || []);
+        setCities(citiesData.cities || []);
+      } catch (err) {
+        // Non-fatal — filters just won't be populated
+        console.error("Failed to load filter options", err);
+      }
+    }
+    loadFilters();
+  }, []);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -22,6 +50,8 @@ export default function Home() {
     if (form.gpa) params.set("gpa", form.gpa);
     if (form.ielts) params.set("ielts", form.ielts);
     if (form.budget) params.set("budget", form.budget);
+    if (form.course) params.set("course", form.course);
+    if (form.city) params.set("city", form.city);
 
     try {
       const res = await fetch(`${API_URL}/universities?${params.toString()}`);
@@ -117,6 +147,47 @@ export default function Home() {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="course">
+              Course / subject{" "}
+              <span className="text-text-secondary">(optional)</span>
+            </label>
+            <select
+              id="course"
+              name="course"
+              value={form.course}
+              onChange={handleChange}
+              className="w-full rounded-md border border-border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-white"
+            >
+              <option value="">Any course</option>
+              {courses.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5" htmlFor="city">
+              City / region <span className="text-text-secondary">(optional)</span>
+            </label>
+            <select
+              id="city"
+              name="city"
+              value={form.city}
+              onChange={handleChange}
+              className="w-full rounded-md border border-border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-gold bg-white"
+            >
+              <option value="">Any city</option>
+              {cities.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <button
             type="submit"
             disabled={status === "loading"}
@@ -159,8 +230,8 @@ export default function Home() {
 
               {results.length === 0 && (
                 <div className="border border-dashed border-border rounded-lg p-10 text-center text-text-secondary">
-                  No matches yet — try lowering your IELTS requirement or
-                  raising your budget.
+                  No matches yet — try lowering your IELTS requirement,
+                  raising your budget, or clearing the course/city filter.
                 </div>
               )}
 
@@ -187,6 +258,16 @@ export default function Home() {
                             className="font-mono text-xs border border-border rounded px-2 py-0.5 text-text-secondary"
                           >
                             {m} intake
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {uni.courses.map((c) => (
+                          <span
+                            key={c}
+                            className="font-mono text-xs bg-background rounded px-2 py-0.5 text-text-secondary"
+                          >
+                            {c}
                           </span>
                         ))}
                       </div>
