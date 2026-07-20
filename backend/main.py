@@ -10,6 +10,7 @@ app.add_middleware(
         "http://localhost:3000",
         "http://127.0.0.1:3000",
         "https://unimatch-4utmehiw5-aurtho1.vercel.app",
+        "https://unimatch-lake.vercel.app"
     ],
     allow_methods=["*"],
     allow_headers=["*"],
