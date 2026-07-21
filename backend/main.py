@@ -49,11 +49,6 @@ def get_universities(
     course: Optional[str] = Query(None, description="Subject/course keyword, e.g. 'Computer Science'"),
     city: Optional[str] = Query(None, description="Preferred city or region, e.g. 'London'"),
 ):
-    """
-    Returns universities the student is eligible for, filtered by GPA, IELTS,
-    budget, course/subject, and city preference. Any filter left out is
-    simply ignored (no restriction on it).
-    """
     results = []
     for uni in UNIVERSITIES:
         if gpa is not None and uni["min_gpa"] is not None and gpa < uni["min_gpa"]:
@@ -68,8 +63,21 @@ def get_universities(
             )
             if not course_match:
                 continue
-        if city is not None and city.strip().lower() not in uni["city"].lower():
-            continue
+        
+        # Wales er logic
+        if city is not None:
+            search_city = city.strip().lower()
+            uni_city = uni["city"].lower()
+            
+            wales_cities = ["cardiff", "newport", "pontypridd", "swansea", "bangor", "wrexham"]
+            
+            if search_city == "wales":
+                if uni_city not in wales_cities and "wales" not in uni_city:
+                    continue
+            else:
+                if search_city not in uni_city:
+                    continue
+                    
         results.append(uni)
 
     return {"count": len(results), "results": results}
@@ -77,8 +85,6 @@ def get_universities(
 
 @app.get("/courses")
 def get_all_courses():
-    """Returns a deduplicated, sorted list of all course/subject names — useful
-    for populating a dropdown filter on the frontend."""
     all_courses = set()
     for uni in UNIVERSITIES:
         all_courses.update(uni.get("courses", []))
@@ -87,7 +93,6 @@ def get_all_courses():
 
 @app.get("/cities")
 def get_all_cities():
-    """Returns a deduplicated, sorted list of all cities — useful for a
-    city-preference dropdown on the frontend."""
-    all_cities = sorted({uni["city"] for uni in UNIVERSITIES})
-    return {"cities": all_cities}
+    all_cities = {uni["city"] for uni in UNIVERSITIES}
+    all_cities.add("Wales")  
+    return {"cities": sorted(all_cities)}
