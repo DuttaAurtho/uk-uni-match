@@ -72,15 +72,70 @@ def _format_search_context(results):
     return "\n".join(lines)
 
 
-def _ac_uk_url(results):
+_STOPWORDS = {"university", "of", "the", "and", "college", "institute", "school"}
+
+
+def _is_subsequence(needle, haystack):
+    it = iter(haystack)
+    return all(ch in it for ch in needle)
+
+
+def _domain_fits_name(href, name):
+    """Does this .ac.uk domain plausibly belong to `name`?
+
+    A search for one university routinely surfaces another's page, so the
+    first .ac.uk hit is not necessarily the right institution — searching
+    "University of Edinburgh fees" can return hw.ac.uk above ed.ac.uk. We
+    accept the domain label if it reads like an abbreviation of the name:
+    either the initials (hw -> Heriot-Watt, gcu -> Glasgow Caledonian) or a
+    subsequence of one significant word (abdn -> Aberdeen, ed -> Edinburgh).
+    """
+    match = re.search(r"//(?:www\.)?([a-z0-9-]+)\.ac\.uk", href.lower())
+    if not match:
+        return False
+    label = match.group(1).replace("-", "")
+    words = _norm_name(name).split()
+    if not words or not label:
+        return False
+
+    # Real abbreviations disagree about which words count: gcu keeps
+    # "University", uws keeps "West", hw drops both. Try each convention.
+    variants = [
+        words,
+        [w for w in words if w not in {"of", "the", "and"}],
+        [w for w in words if w not in _STOPWORDS],
+    ]
+    acronyms = ["".join(w[0] for w in v) for v in variants if v]
+    if label in acronyms:
+        return True
+    # Long names get truncated abbreviations: lse for London School of
+    # Economics and Political Science. Require 3+ chars so a stray initial
+    # can't match half the sector.
+    if len(label) >= 3 and any(a.startswith(label) for a in acronyms):
+        return True
+
+    significant = [w for w in words if w not in _STOPWORDS]
+    return any(_is_subsequence(label, w) for w in significant)
+
+
+def _ac_uk_url(results, name=None):
     """A real UK university domain spotted in search results — trusted
     over anything the model claims on its own, since it's observed
-    evidence rather than a model guess."""
+    evidence rather than a model guess. When `name` is given, only a domain
+    that plausibly belongs to that university is trusted; otherwise we would
+    happily hand back a rival's fees page."""
+    fallback = None
     for r in results:
         href = r.get("href", "")
-        if ".ac.uk" in href:
+        if ".ac.uk" not in href:
+            continue
+        if name is None:
             return href
-    return None
+        if _domain_fits_name(href, name):
+            return href
+        if fallback is None:
+            fallback = href
+    return None if name is not None else fallback
 
 
 def _best_guess_url(results):
@@ -98,6 +153,36 @@ def _clean_url(value):
         return None
     value = value.strip()
     return value if _URL_RE.match(value) else None
+
+
+def _norm_name(value):
+    """Loose key for matching university names: drops parenthetical asides
+    like "(Paisley)" and all punctuation, so "St Mary's University, Twickenham"
+    and "St Marys University Twickenham" collapse to the same thing."""
+    value = re.sub(r"\(.*?\)", " ", value or "")
+    # Apostrophes are deleted rather than spaced, so "Mary's" and "Marys"
+    # collapse together instead of becoming "mary s" and "marys".
+    value = value.replace("'", "").replace("’", "")
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", value.lower()).split())
+
+
+def _resolve_candidate(model_name, enriched):
+    """Map a name Gemini returned back onto the candidate we asked about.
+    Returns (canonical_name, enrich_info); falls back to the model's own name
+    if nothing matches, so an unexpected extra entry is passed through rather
+    than dropped."""
+    if not model_name:
+        return None, {}
+    key = _norm_name(model_name)
+    if key:
+        for e in enriched:
+            if _norm_name(e["name"]) == key:
+                return e["name"], e
+        for e in enriched:
+            other = _norm_name(e["name"])
+            if other and (other in key or key in other):
+                return e["name"], e
+    return model_name, {}
 
 
 def _extract_json(text):
@@ -187,7 +272,7 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
             "name": name,
             "city": city_name,
             "baseline": c,
-            "ac_uk_url": _ac_uk_url(results),
+            "ac_uk_url": _ac_uk_url(results, name),
             "best_guess_url": _best_guess_url(results),
             "search_context": _format_search_context(results),
         }
@@ -235,16 +320,18 @@ Only return the JSON array, nothing else."""
     if not isinstance(data, list):
         raise ValueError("Expected a JSON array from Gemini search response")
 
-    enriched_by_name = {e["name"].lower(): e for e in enriched}
-
     results = []
     seen_names = set()
     for item in data:
-        name = item.get("name")
+        # Gemini tends to decorate the name it was handed — "University of X"
+        # comes back as "University of X (Paisley)". Resolve it to the exact
+        # candidate name, otherwise the caller can't tell that this record and
+        # its static counterpart are the same university, and the trusted
+        # .ac.uk URL observed in search results never gets matched either.
+        name, enrich_info = _resolve_candidate(item.get("name"), enriched)
         if not name or name.lower() in seen_names:
             continue
         seen_names.add(name.lower())
-        enrich_info = enriched_by_name.get(name.lower(), {})
         official_url = (
             enrich_info.get("ac_uk_url")
             or _clean_url(item.get("official_url"))
@@ -320,7 +407,9 @@ Only return the JSON object, nothing else."""
         raise ValueError("Expected a JSON object from Gemini details response")
 
     data["official_url"] = (
-        _ac_uk_url(results) or _clean_url(data.get("official_url")) or _best_guess_url(results)
+        _ac_uk_url(results, name)
+        or _clean_url(data.get("official_url"))
+        or _best_guess_url(results)
     )
 
     _cache_set(cache_key, data)
