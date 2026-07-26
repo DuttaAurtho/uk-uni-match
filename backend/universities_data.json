@@ -1,674 +1,3334 @@
 [
   {
     "id": 1,
-    "name": "University of Manchester",
-    "city": "Manchester",
-    "min_gpa": 3.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 26000,
-    "scholarship": "Manchester Global Futures Scholarship, up to £10,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Computer Science", "Engineering", "Business & Management", "Medicine & Health Sciences", "Natural Sciences"]
-  },
-  {
-    "id": 2,
-    "name": "University of Leeds",
-    "city": "Leeds",
-    "min_gpa": 3.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 24500,
-    "scholarship": "Leeds International Excellence Scholarship, up to £5,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Computer Science", "Engineering", "Business & Management", "Medicine & Health Sciences", "Law"]
-  },
-  {
-    "id": 3,
-    "name": "University of Sheffield",
-    "city": "Sheffield",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 23500,
-    "scholarship": "Sheffield International Merit Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Computer Science", "Social Sciences", "Medicine & Health Sciences"]
-  },
-  {
-    "id": 4,
-    "name": "University of Birmingham",
-    "city": "Birmingham",
-    "min_gpa": 3.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 25000,
-    "scholarship": "Birmingham Global Masters Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Engineering", "Law", "Medicine & Health Sciences", "Social Sciences"]
-  },
-  {
-    "id": 5,
-    "name": "University of Nottingham",
-    "city": "Nottingham",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 22000,
-    "scholarship": "Nottingham Development Scholarship, up to 50% fee reduction",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Engineering", "Veterinary & Agriculture", "Medicine & Health Sciences"]
-  },
-  {
-    "id": 6,
-    "name": "University of Liverpool",
-    "city": "Liverpool",
-    "min_gpa": 3.0,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 21500,
-    "scholarship": "Liverpool International Undergraduate Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Computer Science", "Veterinary & Agriculture", "Medicine & Health Sciences"]
-  },
-  {
-    "id": 7,
-    "name": "Newcastle University",
-    "city": "Newcastle upon Tyne",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 23000,
-    "scholarship": "Newcastle International Family Discount, 10% for siblings",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Medicine & Health Sciences", "Natural Sciences"]
-  },
-  {
-    "id": 8,
-    "name": "University of Southampton",
-    "city": "Southampton",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 22500,
-    "scholarship": "Southampton Presessional Scholarship, up to £2,500",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Computer Science", "Medicine & Health Sciences", "Natural Sciences"]
-  },
-  {
-    "id": 9,
-    "name": "University of Bristol",
-    "city": "Bristol",
-    "min_gpa": 3.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 26500,
-    "scholarship": "Think Big Scholarship, up to £15,000",
-    "intakes": ["September"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Veterinary & Agriculture", "Medicine & Health Sciences", "Social Sciences"]
-  },
-  {
-    "id": 10,
-    "name": "University of Warwick",
-    "city": "Coventry",
-    "min_gpa": 3.5,
-    "min_ielts": 7.0,
-    "annual_tuition_gbp": 27000,
-    "scholarship": "Warwick Chancellor's International Scholarship, full fee waiver (limited)",
-    "intakes": ["September"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Social Sciences", "Natural Sciences"]
-  },
-  {
-    "id": 11,
-    "name": "Loughborough University",
-    "city": "Loughborough",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 23500,
-    "scholarship": "Loughborough International Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Social Sciences"]
-  },
-  {
-    "id": 12,
-    "name": "University of Leicester",
-    "city": "Leicester",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 20000,
-    "scholarship": "Leicester Chancellor's International Scholarship, up to £2,500",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Medicine & Health Sciences", "Law", "Social Sciences", "Computer Science"]
-  },
-  {
-    "id": 13,
-    "name": "University of York",
-    "city": "York",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 22500,
-    "scholarship": "York International Scholarship, up to £3,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Social Sciences", "Natural Sciences", "Computer Science"]
-  },
-  {
-    "id": 14,
-    "name": "Lancaster University",
-    "city": "Lancaster",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 22000,
-    "scholarship": "Lancaster International Merit Award, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Social Sciences"]
-  },
-  {
-    "id": 15,
-    "name": "University of Exeter",
-    "city": "Exeter",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 23500,
-    "scholarship": "Exeter Global Excellence Scholarship, up to £5,000",
-    "intakes": ["September"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Natural Sciences", "Law"]
-  },
-  {
-    "id": 16,
-    "name": "University of Reading",
-    "city": "Reading",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 20500,
-    "scholarship": "Reading International Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Veterinary & Agriculture", "Natural Sciences"]
-  },
-  {
-    "id": 17,
-    "name": "University of Surrey",
-    "city": "Guildford",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 22000,
-    "scholarship": "Surrey International Merit Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Computer Science", "Veterinary & Agriculture"]
-  },
-  {
-    "id": 18,
-    "name": "Brunel University of London",
-    "city": "Uxbridge",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 19500,
-    "scholarship": "Brunel International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Computer Science", "Business & Management"]
-  },
-  {
-    "id": 19,
-    "name": "City St George's, University of London",
-    "city": "London",
-    "min_gpa": 2.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 21000,
-    "scholarship": "City International Scholarship, up to £3,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Law", "Medicine & Health Sciences"]
-  },
-  {
-    "id": 20,
-    "name": "University of Westminster",
-    "city": "London",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 17500,
-    "scholarship": "Westminster Vice-Chancellor's Scholarship, up to £3,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Arts & Design", "Social Sciences"]
-  },
-  {
-    "id": 21,
-    "name": "Kingston University",
-    "city": "Kingston upon Thames",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16500,
-    "scholarship": "Kingston International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Arts & Design", "Business & Management", "Computer Science"]
-  },
-  {
-    "id": 22,
-    "name": "University of Greenwich",
-    "city": "London",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16000,
-    "scholarship": "Greenwich International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Engineering", "Social Sciences"]
-  },
-  {
-    "id": 23,
-    "name": "University of East London",
-    "city": "London",
-    "min_gpa": 2.5,
-    "min_ielts": 5.5,
-    "annual_tuition_gbp": 14400,
-    "scholarship": "Global Excellence Scholarship, up to £3,000",
-    "intakes": ["September", "January", "May"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Social Sciences", "Arts & Design"]
-  },
-  {
-    "id": 24,
-    "name": "Middlesex University",
-    "city": "London",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 15500,
-    "scholarship": "Middlesex Global Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Arts & Design", "Computer Science"]
-  },
-  {
-    "id": 25,
-    "name": "Coventry University",
-    "city": "Coventry",
-    "min_gpa": 3.0,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 17700,
-    "scholarship": "International scholarship up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Computer Science"]
-  },
-  {
-    "id": 26,
-    "name": "De Montfort University",
-    "city": "Leicester",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 15500,
-    "scholarship": "DMU Global Talent Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Arts & Design", "Business & Management", "Law"]
-  },
-  {
-    "id": 27,
-    "name": "Sheffield Hallam University",
-    "city": "Sheffield",
-    "min_gpa": 3.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16000,
-    "scholarship": "Vice-Chancellor's Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Engineering", "Social Sciences"]
-  },
-  {
-    "id": 28,
-    "name": "Nottingham Trent University",
-    "city": "Nottingham",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16500,
-    "scholarship": "NTU International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Arts & Design", "Social Sciences"]
-  },
-  {
-    "id": 29,
-    "name": "University of Hertfordshire",
-    "city": "Hatfield",
-    "min_gpa": 3.0,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 15750,
-    "scholarship": "International merit scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Computer Science"]
-  },
-  {
-    "id": 30,
-    "name": "University of Portsmouth",
-    "city": "Portsmouth",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16500,
-    "scholarship": "Portsmouth Global Scholarship, up to £3,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Social Sciences"]
-  },
-  {
-    "id": 31,
-    "name": "Oxford Brookes University",
-    "city": "Oxford",
-    "min_gpa": 3.0,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 17500,
-    "scholarship": "Oxford Brookes International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Arts & Design", "Social Sciences"]
-  },
-  {
-    "id": 32,
-    "name": "University of Sunderland",
-    "city": "Sunderland",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 14500,
-    "scholarship": "Sunderland International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Engineering"]
-  },
-  {
-    "id": 33,
-    "name": "Teesside University",
-    "city": "Middlesbrough",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 15000,
-    "scholarship": "Teesside International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Computer Science", "Business & Management", "Engineering"]
-  },
-  {
-    "id": 34,
-    "name": "University of Bolton",
-    "city": "Bolton",
-    "min_gpa": 2.5,
-    "min_ielts": 5.5,
-    "annual_tuition_gbp": 13500,
-    "scholarship": "Bolton International Scholarship, up to £1,500",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Computer Science"]
-  },
-  {
-    "id": 35,
-    "name": "University of Central Lancashire",
-    "city": "Preston",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16500,
-    "scholarship": "UCLan International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Social Sciences"]
-  },
-  {
-    "id": 36,
-    "name": "University of Hull",
-    "city": "Hull",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16000,
-    "scholarship": "Hull International scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Computer Science", "Business & Management", "Social Sciences"]
-  },
-  {
-    "id": 37,
-    "name": "University of Bradford",
-    "city": "Bradford",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16000,
-    "scholarship": "Bradford International Scholarship, up to £2,500",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Social Sciences"]
-  },
-  {
-    "id": 38,
-    "name": "Anglia Ruskin University",
-    "city": "Cambridge",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 15000,
-    "scholarship": "Check university website for international scholarships",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Computer Science", "Business & Management", "Engineering", "Social Sciences", "Arts & Design"]
-  },
-  {
-    "id": 39,
-    "name": "University of Roehampton",
-    "city": "London",
-    "min_gpa": 2.5,
-    "min_ielts": 5.5,
-    "annual_tuition_gbp": 15500,
-    "scholarship": "Vice-Chancellor's scholarship, up to 30%",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Social Sciences", "Arts & Design", "Business & Management"]
-  },
-  {
-    "id": 40,
-    "name": "Arts University Bournemouth",
-    "city": "Poole",
-    "min_gpa": null,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 18000,
-    "scholarship": "Varies by course — check the university's own scholarship page",
-    "intakes": ["September"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Arts & Design", "Performing Arts"]
-  },
-  {
-    "id": 41,
-    "name": "Ravensbourne University London",
-    "city": "London",
-    "min_gpa": null,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 17000,
-    "scholarship": "Varies by course — check the university's own scholarship page",
-    "intakes": ["September"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Arts & Design", "Performing Arts", "Computer Science"]
-  },
-  {
-    "id": 42,
-    "name": "University of Chester",
-    "city": "Chester",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 15500,
-    "scholarship": "Chester International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Social Sciences", "Computer Science"]
-  },
-  {
-    "id": 43,
-    "name": "University of Edinburgh",
-    "city": "Edinburgh",
-    "min_gpa": 3.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 27500,
-    "scholarship": "Edinburgh Global Scholarship, up to £5,000",
-    "intakes": ["September"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Medicine & Health Sciences", "Veterinary & Agriculture", "Computer Science", "Law"]
-  },
-  {
-    "id": 44,
-    "name": "University of Glasgow",
-    "city": "Glasgow",
-    "min_gpa": 3.5,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 25000,
-    "scholarship": "Glasgow International Leadership Scholarship, £5,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Medicine & Health Sciences", "Engineering", "Social Sciences", "Law"]
-  },
-  {
-    "id": 45,
-    "name": "University of Strathclyde",
-    "city": "Glasgow",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 22000,
-    "scholarship": "Strathclyde International Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Law"]
-  },
-  {
-    "id": 46,
-    "name": "Heriot-Watt University",
-    "city": "Edinburgh",
-    "min_gpa": 3.0,
-    "min_ielts": 6.5,
-    "annual_tuition_gbp": 21000,
-    "scholarship": "Heriot-Watt International Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Computer Science"]
-  },
-  {
-    "id": 47,
-    "name": "Robert Gordon University",
-    "city": "Aberdeen",
-    "min_gpa": 2.5,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 16500,
-    "scholarship": "RGU International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Business & Management", "Medicine & Health Sciences"]
-  },
-  {
-    "id": 48,
     "name": "Abertay University",
     "city": "Dundee",
     "min_gpa": 2.5,
     "min_ielts": 6.0,
     "annual_tuition_gbp": 15000,
     "scholarship": "Check university website for international scholarships",
-    "intakes": ["September", "January"],
+    "intakes": [
+      "September",
+      "January"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Computer Science", "Business & Management", "Engineering", "Social Sciences", "Arts & Design"]
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Engineering",
+      "Social Sciences",
+      "Arts & Design"
+    ]
   },
   {
-    "id": 49,
-    "name": "Cardiff University",
-    "city": "Cardiff",
-    "min_gpa": 3.0,
+    "id": 2,
+    "name": "Aberystwyth University",
+    "city": "Aberystwyth",
+    "min_gpa": 3.5,
     "min_ielts": 6.5,
-    "annual_tuition_gbp": 23000,
-    "scholarship": "Cardiff Global Opportunities Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Medicine & Health Sciences", "Law", "Engineering", "Social Sciences"]
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
   },
   {
-    "id": 50,
-    "name": "Cardiff Metropolitan University",
-    "city": "Cardiff",
+    "id": 3,
+    "name": "Anglia Ruskin University",
+    "city": "Cambridge",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 15000,
+    "scholarship": "Check university website for international scholarships",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Engineering",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Arden University",
+    "city": "Coventry",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Arts University Bournemouth",
+    "city": "Poole",
+    "min_gpa": null,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 18000,
+    "scholarship": "Varies by course — check the university's own scholarship page",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Arts University Plymouth",
+    "city": "Plymouth",
     "min_gpa": 3.0,
     "min_ielts": 6.0,
-    "annual_tuition_gbp": 13750,
-    "scholarship": "Early bird discount available",
-    "intakes": ["September", "January"],
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Arts & Design", "Social Sciences"]
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
   },
   {
-    "id": 51,
-    "name": "University of South Wales",
-    "city": "Pontypridd",
+    "id": 7,
+    "name": "Aston University",
+    "city": "Birmingham",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 8,
+    "name": "BPP University",
+    "city": "London",
     "min_gpa": 3.0,
     "min_ielts": 6.0,
-    "annual_tuition_gbp": 14750,
-    "scholarship": "Up to 20% international merit scholarship",
-    "intakes": ["September", "January"],
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Engineering", "Computer Science"]
+    "courses": [
+      "Law",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Computer Science"
+    ]
   },
   {
-    "id": 52,
-    "name": "Swansea University",
-    "city": "Swansea",
-    "min_gpa": 3.0,
-    "min_ielts": 6.0,
-    "annual_tuition_gbp": 19500,
-    "scholarship": "Swansea International Scholarship, up to £3,000",
-    "intakes": ["September", "January"],
-    "data_status": "Estimated - please verify",
-    "courses": ["Engineering", "Computer Science", "Business & Management"]
-  },
-  {
-    "id": 53,
+    "id": 9,
     "name": "Bangor University",
     "city": "Bangor",
     "min_gpa": 2.5,
     "min_ielts": 6.0,
     "annual_tuition_gbp": 16000,
     "scholarship": "Bangor International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
+    "intakes": [
+      "September",
+      "January"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Natural Sciences", "Social Sciences"]
+    "courses": [
+      "Business & Management",
+      "Natural Sciences",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Bath Spa University",
+    "city": "Bath",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts",
+      "Business & Management",
+      "Social Sciences",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 11,
+    "name": "Birkbeck, University of London",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Social Sciences",
+      "Law",
+      "Computer Science",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 12,
+    "name": "Birmingham City University",
+    "city": "Birmingham",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 13,
+    "name": "Bishop Grosseteste University",
+    "city": "Lincoln",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 14,
+    "name": "Bournemouth University",
+    "city": "Poole",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 15,
+    "name": "Brunel University of London",
+    "city": "Uxbridge",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 19500,
+    "scholarship": "Brunel International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Buckinghamshire New University",
+    "city": "High Wycombe",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 17,
+    "name": "Canterbury Christ Church University",
+    "city": "Canterbury",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 18,
+    "name": "Cardiff Metropolitan University",
+    "city": "Cardiff",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 13750,
+    "scholarship": "Early bird discount available",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Arts & Design",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 19,
+    "name": "Cardiff University",
+    "city": "Cardiff",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 23000,
+    "scholarship": "Cardiff Global Opportunities Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Medicine & Health Sciences",
+      "Law",
+      "Engineering",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 20,
+    "name": "City St George's, University of London",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "City International Scholarship, up to £3,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Law",
+      "Medicine & Health Sciences"
+    ]
+  },
+  {
+    "id": 21,
+    "name": "Courtauld Institute of Art",
+    "city": "London",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 22,
+    "name": "Coventry University",
+    "city": "Coventry",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17700,
+    "scholarship": "International scholarship up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 23,
+    "name": "Cranfield University",
+    "city": "Cranfield",
+    "min_gpa": 4.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Business & Management",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 24,
+    "name": "De Montfort University",
+    "city": "Leicester",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 15500,
+    "scholarship": "DMU Global Talent Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Business & Management",
+      "Law"
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Durham University",
+    "city": "Durham",
+    "min_gpa": 4.0,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Dyson Institute of Engineering and Technology",
+    "city": "Malmesbury",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Edge Hill University",
+    "city": "Ormskirk",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Edinburgh Napier University",
+    "city": "Edinburgh",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Falmouth University",
+    "city": "Falmouth",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Glasgow Caledonian University",
+    "city": "Glasgow",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Glasgow School of Art",
+    "city": "Glasgow",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Goldsmiths, University of London",
+    "city": "London",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts",
+      "Social Sciences",
+      "Computer Science",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Guildhall School of Music and Drama",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Harper Adams University",
+    "city": "Newport (Shropshire)",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Veterinary & Agriculture",
+      "Natural Sciences",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Hartpury University",
+    "city": "Gloucester",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Veterinary & Agriculture",
+      "Medicine & Health Sciences",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Heriot-Watt University",
+    "city": "Edinburgh",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "Heriot-Watt International Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Hult International Business School",
+    "city": "London",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Imperial College London",
+    "city": "London",
+    "min_gpa": 4.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 35000,
+    "scholarship": "Highly competitive international awards; amounts vary by course — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Keele University",
+    "city": "Keele",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 40,
+    "name": "King's College London",
+    "city": "London",
+    "min_gpa": 4.0,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 41,
+    "name": "Kingston University",
+    "city": "Kingston upon Thames",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16500,
+    "scholarship": "Kingston International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Business & Management",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 42,
+    "name": "Lancaster University",
+    "city": "Lancaster",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Lancaster International Merit Award, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 43,
+    "name": "Leeds Arts University",
+    "city": "Leeds",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 44,
+    "name": "Leeds Beckett University",
+    "city": "Leeds",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 45,
+    "name": "Leeds Conservatoire",
+    "city": "Leeds",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 46,
+    "name": "Leeds Trinity University",
+    "city": "Leeds",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 47,
+    "name": "Liverpool Hope University",
+    "city": "Liverpool",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 48,
+    "name": "Liverpool John Moores University",
+    "city": "Liverpool",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 49,
+    "name": "London Business School",
+    "city": "London",
+    "min_gpa": 4.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 35000,
+    "scholarship": "Highly competitive international awards; amounts vary by course — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 50,
+    "name": "London Interdisciplinary School",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Computer Science",
+      "Business & Management",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 51,
+    "name": "London Metropolitan University",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 52,
+    "name": "London School of Economics and Political Science",
+    "city": "London",
+    "min_gpa": 4.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 35000,
+    "scholarship": "Highly competitive international awards; amounts vary by course — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Social Sciences",
+      "Law",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 53,
+    "name": "London School of Hygiene & Tropical Medicine",
+    "city": "London",
+    "min_gpa": 4.0,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Medicine & Health Sciences",
+      "Natural Sciences"
+    ]
   },
   {
     "id": 54,
-    "name": "Wrexham University",
-    "city": "Wrexham",
-    "min_gpa": 2.5,
-    "min_ielts": 5.5,
-    "annual_tuition_gbp": 13500,
-    "scholarship": "Wrexham International Scholarship, up to £1,500",
-    "intakes": ["September", "January"],
+    "name": "London South Bank University",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Engineering"]
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
   },
   {
     "id": 55,
+    "name": "Loughborough University",
+    "city": "Loughborough",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 23500,
+    "scholarship": "Loughborough International Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Manchester Metropolitan University",
+    "city": "Manchester",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Middlesex University",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 15500,
+    "scholarship": "Middlesex Global Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Arts & Design",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 58,
+    "name": "NMITE",
+    "city": "Hereford",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 59,
+    "name": "Newcastle University",
+    "city": "Newcastle upon Tyne",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 23000,
+    "scholarship": "Newcastle International Family Discount, 10% for siblings",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 60,
+    "name": "Newman University",
+    "city": "Birmingham",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Northeastern University London",
+    "city": "London",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Northumbria University",
+    "city": "Newcastle upon Tyne",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 63,
+    "name": "Norwich University of the Arts",
+    "city": "Norwich",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 64,
+    "name": "Nottingham Trent University",
+    "city": "Nottingham",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16500,
+    "scholarship": "NTU International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Arts & Design",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 65,
+    "name": "Oxford Brookes University",
+    "city": "Oxford",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17500,
+    "scholarship": "Oxford Brookes International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Arts & Design",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 66,
+    "name": "Plymouth Marjon University",
+    "city": "Plymouth",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 67,
+    "name": "Queen Margaret University",
+    "city": "Edinburgh",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Medicine & Health Sciences",
+      "Business & Management",
+      "Social Sciences",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 68,
+    "name": "Queen Mary University of London",
+    "city": "London",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 69,
     "name": "Queen's University Belfast",
     "city": "Belfast",
     "min_gpa": 3.0,
     "min_ielts": 6.5,
     "annual_tuition_gbp": 21500,
     "scholarship": "QUB International Scholarship, up to £4,000",
-    "intakes": ["September", "January"],
+    "intakes": [
+      "September",
+      "January"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Medicine & Health Sciences", "Engineering", "Law", "Social Sciences"]
+    "courses": [
+      "Medicine & Health Sciences",
+      "Engineering",
+      "Law",
+      "Social Sciences"
+    ]
   },
   {
-    "id": 56,
+    "id": 70,
+    "name": "Ravensbourne University London",
+    "city": "London",
+    "min_gpa": null,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "Varies by course — check the university's own scholarship page",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Regent's University London",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Richmond American University London",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 73,
+    "name": "Robert Gordon University",
+    "city": "Aberdeen",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16500,
+    "scholarship": "RGU International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences"
+    ]
+  },
+  {
+    "id": 74,
+    "name": "Rose Bruford College",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Royal Academy of Music",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Royal Agricultural University",
+    "city": "Cirencester",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Veterinary & Agriculture",
+      "Natural Sciences",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Royal Central School of Speech and Drama",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 78,
+    "name": "Royal College of Art",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Royal College of Music",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Royal Conservatoire of Scotland",
+    "city": "Glasgow",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Royal Holloway, University of London",
+    "city": "Egham",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Royal Northern College of Music",
+    "city": "Manchester",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 83,
+    "name": "Royal Veterinary College",
+    "city": "London",
+    "min_gpa": 4.0,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Veterinary & Agriculture",
+      "Medicine & Health Sciences",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 84,
+    "name": "Royal Welsh College of Music & Drama",
+    "city": "Cardiff",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 85,
+    "name": "SOAS University of London",
+    "city": "London",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Law",
+      "Business & Management",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 86,
+    "name": "Scotland's Rural College",
+    "city": "Edinburgh",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Veterinary & Agriculture",
+      "Natural Sciences",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 87,
+    "name": "Sheffield Hallam University",
+    "city": "Sheffield",
+    "min_gpa": 3.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16000,
+    "scholarship": "Vice-Chancellor's Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Engineering",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 88,
+    "name": "Solent University",
+    "city": "Southampton",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 89,
+    "name": "St Mary's University College Belfast",
+    "city": "Belfast",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 90,
+    "name": "St Mary's University, Twickenham",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Medicine & Health Sciences",
+      "Business & Management",
+      "Performing Arts",
+      "Law"
+    ]
+  },
+  {
+    "id": 91,
+    "name": "Staffordshire University",
+    "city": "Stoke-on-Trent",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 92,
+    "name": "Stranmillis University College",
+    "city": "Belfast",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 93,
+    "name": "Swansea University",
+    "city": "Swansea",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 19500,
+    "scholarship": "Swansea International Scholarship, up to £3,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 94,
+    "name": "Teesside University",
+    "city": "Middlesbrough",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 15000,
+    "scholarship": "Teesside International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Engineering"
+    ]
+  },
+  {
+    "id": 95,
+    "name": "The Open University",
+    "city": "Milton Keynes",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 96,
+    "name": "The University of Law",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Law",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 97,
+    "name": "Trinity Laban Conservatoire of Music and Dance",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 98,
     "name": "Ulster University",
     "city": "Belfast",
     "min_gpa": 2.5,
     "min_ielts": 6.0,
     "annual_tuition_gbp": 17000,
     "scholarship": "Ulster International Scholarship, up to £2,000",
-    "intakes": ["September", "January"],
+    "intakes": [
+      "September",
+      "January"
+    ],
     "data_status": "Estimated - please verify",
-    "courses": ["Business & Management", "Computer Science", "Arts & Design"]
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 99,
+    "name": "University College Birmingham",
+    "city": "Birmingham",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 100,
+    "name": "University College London",
+    "city": "London",
+    "min_gpa": 4.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 35000,
+    "scholarship": "Highly competitive international awards; amounts vary by course — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design",
+      "Performing Arts",
+      "Veterinary & Agriculture"
+    ]
+  },
+  {
+    "id": 101,
+    "name": "University for the Creative Arts",
+    "city": "Farnham",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 102,
+    "name": "University of Aberdeen",
+    "city": "Aberdeen",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 103,
+    "name": "University of Bath",
+    "city": "Bath",
+    "min_gpa": 4.0,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Natural Sciences",
+      "Social Sciences",
+      "Medicine & Health Sciences"
+    ]
+  },
+  {
+    "id": 104,
+    "name": "University of Bedfordshire",
+    "city": "Luton",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 105,
+    "name": "University of Birmingham",
+    "city": "Birmingham",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "Birmingham Global Masters Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Engineering",
+      "Law",
+      "Medicine & Health Sciences",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 106,
+    "name": "University of Bradford",
+    "city": "Bradford",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16000,
+    "scholarship": "Bradford International Scholarship, up to £2,500",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 107,
+    "name": "University of Brighton",
+    "city": "Brighton",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 108,
+    "name": "University of Bristol",
+    "city": "Bristol",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 26500,
+    "scholarship": "Think Big Scholarship, up to £15,000",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Veterinary & Agriculture",
+      "Medicine & Health Sciences",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 109,
+    "name": "University of Buckingham",
+    "city": "Buckingham",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Law",
+      "Medicine & Health Sciences",
+      "Computer Science",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 110,
+    "name": "University of Cambridge",
+    "city": "Cambridge",
+    "min_gpa": 4.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 35000,
+    "scholarship": "Highly competitive international awards; amounts vary by course — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design",
+      "Performing Arts",
+      "Veterinary & Agriculture"
+    ]
+  },
+  {
+    "id": 111,
+    "name": "University of Central Lancashire",
+    "city": "Preston",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16500,
+    "scholarship": "UCLan International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 112,
+    "name": "University of Chester",
+    "city": "Chester",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 15500,
+    "scholarship": "Chester International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Social Sciences",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 113,
+    "name": "University of Chichester",
+    "city": "Chichester",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 114,
+    "name": "University of Cumbria",
+    "city": "Carlisle",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 115,
+    "name": "University of Derby",
+    "city": "Derby",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 116,
+    "name": "University of Dundee",
+    "city": "Dundee",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 117,
+    "name": "University of East Anglia",
+    "city": "Norwich",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 118,
+    "name": "University of East London",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14400,
+    "scholarship": "Global Excellence Scholarship, up to £3,000",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 119,
+    "name": "University of Edinburgh",
+    "city": "Edinburgh",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 27500,
+    "scholarship": "Edinburgh Global Scholarship, up to £5,000",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Medicine & Health Sciences",
+      "Veterinary & Agriculture",
+      "Computer Science",
+      "Law"
+    ]
+  },
+  {
+    "id": 120,
+    "name": "University of Essex",
+    "city": "Colchester",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 121,
+    "name": "University of Exeter",
+    "city": "Exeter",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 23500,
+    "scholarship": "Exeter Global Excellence Scholarship, up to £5,000",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Natural Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 122,
+    "name": "University of Glasgow",
+    "city": "Glasgow",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "Glasgow International Leadership Scholarship, £5,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Medicine & Health Sciences",
+      "Engineering",
+      "Social Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 123,
+    "name": "University of Gloucestershire",
+    "city": "Cheltenham",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 124,
+    "name": "University of Greater Manchester",
+    "city": "Bolton",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 13500,
+    "scholarship": "Bolton International Scholarship, up to £1,500",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 125,
+    "name": "University of Greenwich",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16000,
+    "scholarship": "Greenwich International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Engineering",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 126,
+    "name": "University of Hertfordshire",
+    "city": "Hatfield",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 15750,
+    "scholarship": "International merit scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 127,
+    "name": "University of Huddersfield",
+    "city": "Huddersfield",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 128,
+    "name": "University of Hull",
+    "city": "Hull",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16000,
+    "scholarship": "Hull International scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 129,
+    "name": "University of Kent",
+    "city": "Canterbury",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 130,
+    "name": "University of Leeds",
+    "city": "Leeds",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 24500,
+    "scholarship": "Leeds International Excellence Scholarship, up to £5,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 131,
+    "name": "University of Leicester",
+    "city": "Leicester",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 20000,
+    "scholarship": "Leicester Chancellor's International Scholarship, up to £2,500",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Medicine & Health Sciences",
+      "Law",
+      "Social Sciences",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 132,
+    "name": "University of Lincoln",
+    "city": "Lincoln",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 133,
+    "name": "University of Liverpool",
+    "city": "Liverpool",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 21500,
+    "scholarship": "Liverpool International Undergraduate Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Veterinary & Agriculture",
+      "Medicine & Health Sciences"
+    ]
+  },
+  {
+    "id": 134,
+    "name": "University of Manchester",
+    "city": "Manchester",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 26000,
+    "scholarship": "Manchester Global Futures Scholarship, up to £10,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 135,
+    "name": "University of Northampton",
+    "city": "Northampton",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 136,
+    "name": "University of Nottingham",
+    "city": "Nottingham",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Nottingham Development Scholarship, up to 50% fee reduction",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Engineering",
+      "Veterinary & Agriculture",
+      "Medicine & Health Sciences"
+    ]
+  },
+  {
+    "id": 137,
+    "name": "University of Oxford",
+    "city": "Oxford",
+    "min_gpa": 4.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 35000,
+    "scholarship": "Highly competitive international awards; amounts vary by course — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design",
+      "Performing Arts",
+      "Veterinary & Agriculture"
+    ]
+  },
+  {
+    "id": 138,
+    "name": "University of Plymouth",
+    "city": "Plymouth",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Law"
+    ]
+  },
+  {
+    "id": 139,
+    "name": "University of Portsmouth",
+    "city": "Portsmouth",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 16500,
+    "scholarship": "Portsmouth Global Scholarship, up to £3,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 140,
+    "name": "University of Reading",
+    "city": "Reading",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 20500,
+    "scholarship": "Reading International Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Veterinary & Agriculture",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 141,
+    "name": "University of Roehampton",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 15500,
+    "scholarship": "Vice-Chancellor's scholarship, up to 30%",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Arts & Design",
+      "Business & Management"
+    ]
+  },
+  {
+    "id": 142,
+    "name": "University of Salford",
+    "city": "Salford",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 143,
+    "name": "University of Sheffield",
+    "city": "Sheffield",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 23500,
+    "scholarship": "Sheffield International Merit Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Social Sciences",
+      "Medicine & Health Sciences"
+    ]
+  },
+  {
+    "id": 144,
+    "name": "University of South Wales",
+    "city": "Pontypridd",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 14750,
+    "scholarship": "Up to 20% international merit scholarship",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Engineering",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 145,
+    "name": "University of Southampton",
+    "city": "Southampton",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 22500,
+    "scholarship": "Southampton Presessional Scholarship, up to £2,500",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Medicine & Health Sciences",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 146,
+    "name": "University of St Andrews",
+    "city": "St Andrews",
+    "min_gpa": 4.0,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 30000,
+    "scholarship": "International excellence scholarships available, typically part-tuition — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 147,
+    "name": "University of Stirling",
+    "city": "Stirling",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 21000,
+    "scholarship": "International merit scholarships available, typically £3,000–£7,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 148,
+    "name": "University of Strathclyde",
+    "city": "Glasgow",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Strathclyde International Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Business & Management",
+      "Law"
+    ]
+  },
+  {
+    "id": 149,
+    "name": "University of Suffolk",
+    "city": "Ipswich",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 150,
+    "name": "University of Sunderland",
+    "city": "Sunderland",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "Sunderland International Scholarship, up to £2,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Engineering"
+    ]
+  },
+  {
+    "id": 151,
+    "name": "University of Surrey",
+    "city": "Guildford",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Surrey International Merit Scholarship, up to £4,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Engineering",
+      "Computer Science",
+      "Veterinary & Agriculture"
+    ]
+  },
+  {
+    "id": 152,
+    "name": "University of Sussex",
+    "city": "Brighton",
+    "min_gpa": 3.5,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 25000,
+    "scholarship": "International merit scholarships available, typically £5,000–£10,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Engineering",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Natural Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 153,
+    "name": "University of Wales Trinity Saint David",
+    "city": "Carmarthen",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 154,
+    "name": "University of Warwick",
+    "city": "Coventry",
+    "min_gpa": 3.5,
+    "min_ielts": 7.0,
+    "annual_tuition_gbp": 27000,
+    "scholarship": "Warwick Chancellor's International Scholarship, full fee waiver (limited)",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Social Sciences",
+      "Natural Sciences"
+    ]
+  },
+  {
+    "id": 155,
+    "name": "University of West London",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 156,
+    "name": "University of Westminster",
+    "city": "London",
+    "min_gpa": 2.5,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17500,
+    "scholarship": "Westminster Vice-Chancellor's Scholarship, up to £3,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Arts & Design",
+      "Social Sciences"
+    ]
+  },
+  {
+    "id": 157,
+    "name": "University of Winchester",
+    "city": "Winchester",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 158,
+    "name": "University of Wolverhampton",
+    "city": "Wolverhampton",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January",
+      "May"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 159,
+    "name": "University of Worcester",
+    "city": "Worcester",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 160,
+    "name": "University of York",
+    "city": "York",
+    "min_gpa": 3.0,
+    "min_ielts": 6.5,
+    "annual_tuition_gbp": 22500,
+    "scholarship": "York International Scholarship, up to £3,000",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Social Sciences",
+      "Natural Sciences",
+      "Computer Science"
+    ]
+  },
+  {
+    "id": 161,
+    "name": "University of the Arts London",
+    "city": "London",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 22000,
+    "scholarship": "Portfolio- and audition-based scholarships available — verify on the official site.",
+    "intakes": [
+      "September"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Arts & Design",
+      "Performing Arts"
+    ]
+  },
+  {
+    "id": 162,
+    "name": "University of the Highlands and Islands",
+    "city": "Inverness",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 163,
+    "name": "University of the West of England, Bristol",
+    "city": "Bristol",
+    "min_gpa": 3.0,
+    "min_ielts": 6.0,
+    "annual_tuition_gbp": 17000,
+    "scholarship": "International student discounts and merit awards, typically £2,000–£5,000 — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design",
+      "Engineering"
+    ]
+  },
+  {
+    "id": 164,
+    "name": "University of the West of Scotland",
+    "city": "Paisley",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
+  },
+  {
+    "id": 165,
+    "name": "Wrexham University",
+    "city": "Wrexham",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 13500,
+    "scholarship": "Wrexham International Scholarship, up to £1,500",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Business & Management",
+      "Computer Science",
+      "Engineering"
+    ]
+  },
+  {
+    "id": 166,
+    "name": "York St John University",
+    "city": "York",
+    "min_gpa": 2.5,
+    "min_ielts": 5.5,
+    "annual_tuition_gbp": 14500,
+    "scholarship": "International bursaries and early-payment discounts available — verify on the official site.",
+    "intakes": [
+      "September",
+      "January"
+    ],
+    "data_status": "Estimated - please verify",
+    "courses": [
+      "Computer Science",
+      "Business & Management",
+      "Medicine & Health Sciences",
+      "Social Sciences",
+      "Law",
+      "Arts & Design"
+    ]
   }
 ]

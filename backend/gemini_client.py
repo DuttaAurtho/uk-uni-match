@@ -173,7 +173,9 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
     ]
     criteria_text = "; ".join(c for c in criteria if c)
 
-    named_candidates = [c for c in candidates[:6] if c.get("name")]
+    # The caller (main.py) decides how many to enrich via its ENRICH_LIMIT —
+    # it has already ranked and sliced the list, so take it as given.
+    named_candidates = [c for c in candidates if c.get("name")]
     if not named_candidates:
         raise ValueError("No candidate universities to enrich")
 
@@ -190,7 +192,7 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
             "search_context": _format_search_context(results),
         }
 
-    with ThreadPoolExecutor(max_workers=6) as pool:
+    with ThreadPoolExecutor(max_workers=min(10, len(named_candidates))) as pool:
         enriched = list(pool.map(_enrich, named_candidates))
 
     if not enriched:

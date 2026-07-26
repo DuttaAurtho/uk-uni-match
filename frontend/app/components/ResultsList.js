@@ -55,10 +55,15 @@ function SkeletonCard() {
   );
 }
 
+function isLive(uni) {
+  return typeof uni.data_status === "string" && uni.data_status.startsWith("Live data");
+}
+
 function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect }) {
   const tier = matchTier(uni, form);
   const visibleCourses = compact ? uni.courses.slice(0, 3) : uni.courses;
   const remaining = uni.courses.length - visibleCourses.length;
+  const live = isLive(uni);
 
   return (
     <article
@@ -76,6 +81,23 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect }) {
               className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${toneClasses[tier.tone]}`}
             >
               {tier.label}
+            </span>
+            <span
+              title={
+                live
+                  ? "Figures verified against live web results just now"
+                  : "Estimated figures — open the university for a live lookup"
+              }
+              className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                live
+                  ? "text-success bg-success-bg"
+                  : "text-text-muted bg-background border border-border"
+              }`}
+            >
+              {live && (
+                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              )}
+              {live ? "Live" : "Estimated"}
             </span>
           </div>
           <p className="text-sm text-text-secondary mt-0.5">{uni.city}</p>
@@ -150,10 +172,22 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect }) {
   );
 }
 
+const PAGE_SIZE = 24;
+
 export default function ResultsList({ status, results, form, onRetry, source, onSelectUniversity }) {
   const [sortBy, setSortBy] = useState("match");
   const [compact, setCompact] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set());
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  // A new search (or a re-sort) should start back at the first page. Done as
+  // an adjust-during-render rather than an effect, so the list never paints
+  // one frame of the old page first.
+  const [pageDeps, setPageDeps] = useState({ results, sortBy });
+  if (pageDeps.results !== results || pageDeps.sortBy !== sortBy) {
+    setPageDeps({ results, sortBy });
+    setVisibleCount(PAGE_SIZE);
+  }
 
   function toggleExpanded(id) {
     setExpandedIds((prev) => {
@@ -180,10 +214,24 @@ export default function ResultsList({ status, results, form, onRetry, source, on
         const ielts = form.ielts === "" ? 0 : Number(form.ielts);
         const margin = (uni) =>
           (uni.min_gpa == null ? 0 : gpa - uni.min_gpa) + (ielts - uni.min_ielts);
-        return list.sort((a, b) => margin(b) - margin(a));
+        // Live-verified entries first — the backend already picked these as
+        // the best matches, and it keeps the "top N verified" note accurate.
+        return list.sort(
+          (a, b) => isLive(b) - isLive(a) || margin(b) - margin(a)
+        );
       }
     }
   }, [results, sortBy, form.gpa, form.ielts]);
+
+  const visibleResults = useMemo(
+    () => sortedResults.slice(0, visibleCount),
+    [sortedResults, visibleCount]
+  );
+  const hiddenCount = sortedResults.length - visibleResults.length;
+  const liveCount = useMemo(
+    () => (results || []).filter(isLive).length,
+    [results]
+  );
 
   if (status === "idle") {
     return (
@@ -245,11 +293,19 @@ export default function ResultsList({ status, results, form, onRetry, source, on
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <p className="font-[family-name:var(--font-display)] text-2xl">
-          <span className="text-gold-dark">{results.length}</span>{" "}
-          {results.length === 1 ? "university matches" : "universities match"}{" "}
-          your profile
-        </p>
+        <div>
+          <p className="font-[family-name:var(--font-display)] text-2xl">
+            <span className="text-gold-dark">{results.length}</span>{" "}
+            {results.length === 1 ? "university matches" : "universities match"}{" "}
+            your profile
+          </p>
+          {liveCount > 0 && (
+            <p className="text-xs text-text-secondary mt-1">
+              Top {liveCount} verified against live web data · the rest show
+              estimated figures until you open them
+            </p>
+          )}
+        </div>
 
         {results.length > 0 && (
           <div className="flex items-center gap-2">
@@ -294,7 +350,7 @@ export default function ResultsList({ status, results, form, onRetry, source, on
       )}
 
       <div className={compact ? "grid sm:grid-cols-2 gap-4" : "space-y-4"}>
-        {sortedResults.map((uni, i) => (
+        {visibleResults.map((uni, i) => (
           <UniCard
             key={uni.id}
             uni={uni}
@@ -307,6 +363,21 @@ export default function ResultsList({ status, results, form, onRetry, source, on
           />
         ))}
       </div>
+
+      {hiddenCount > 0 && (
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+            className="inline-flex items-center gap-2 border border-border bg-surface hover:bg-background text-sm font-semibold px-5 py-2.5 rounded-md transition-colors"
+          >
+            Show {Math.min(hiddenCount, PAGE_SIZE)} more
+            <span className="text-text-muted font-normal">
+              ({hiddenCount} left)
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { IconSparkle } from "./icons";
 
-export default function Hero({ universityCount, onStart }) {
+export default function Hero({ stats, onStart }) {
   function scrollTo(id) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }
@@ -72,8 +72,14 @@ export default function Hero({ universityCount, onStart }) {
           className="mt-14 grid grid-cols-3 max-w-lg gap-6 animate-fade-in-up"
           style={{ animationDelay: "0.32s" }}
         >
-          <Stat value={`${universityCount || 157}+`} label="UK universities" />
-          <Stat value="10" label="Course categories" />
+          <Stat
+            value={stats ? stats.university_count : "—"}
+            label="UK universities"
+          />
+          <Stat
+            value={stats ? stats.city_count : "—"}
+            label="Cities & towns"
+          />
           <Stat value="Free" label="No signup needed" />
         </div>
       </div>

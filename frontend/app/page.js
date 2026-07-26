@@ -27,6 +27,7 @@ export default function Home() {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [courses, setCourses] = useState([]);
   const [cities, setCities] = useState([]);
+  const [stats, setStats] = useState(null);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
 
@@ -34,14 +35,17 @@ export default function Home() {
   useEffect(() => {
     async function loadFilters() {
       try {
-        const [coursesRes, citiesRes] = await Promise.all([
+        const [coursesRes, citiesRes, statsRes] = await Promise.all([
           fetch(`${API_URL}/courses`),
           fetch(`${API_URL}/cities`),
+          fetch(`${API_URL}/stats`),
         ]);
         const coursesData = await coursesRes.json();
         const citiesData = await citiesRes.json();
+        const statsData = await statsRes.json();
         setCourses(coursesData.courses || []);
         setCities(citiesData.cities || []);
+        setStats(statsData);
       } catch (err) {
         // Non-fatal — filters just won't be populated
         console.error("Failed to load filter options", err);
@@ -95,7 +99,7 @@ export default function Home() {
     <>
       <Header />
       <main className="flex-1">
-        <Hero universityCount={56} onStart={scrollToForm} />
+        <Hero stats={stats} onStart={scrollToForm} />
         <HowItWorks />
 
         <section className="mx-auto max-w-5xl px-6 pb-20 grid gap-8 lg:grid-cols-[340px_1fr]">

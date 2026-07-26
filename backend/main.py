@@ -26,19 +26,58 @@ app.add_middleware(
 )
 
 # ---------------------------------------------------------------------------
-# Fallback dataset — used only if the live Gemini lookup fails (rate limit,
-# outage, missing API key, unparsable response). GPA is on the Bangladeshi
-# HSC scale (out of 5.0). "courses" = subject areas each university offers.
+# The full set of UK universities. Every search filters this list; the
+# best-matching few are then enriched with live data (see ENRICH_LIMIT), and
+# the rest are returned as-is with their "Estimated" data_status so the user
+# still sees every university they qualify for. GPA is on the Bangladeshi HSC
+# scale (out of 5.0). "courses" = subject areas each university offers.
 # ---------------------------------------------------------------------------
 DATA_FILE = Path(__file__).parent / "universities_data.json"
 
 with open(DATA_FILE, "r", encoding="utf-8") as f:
     UNIVERSITIES = json.load(f)
 
-WALES_CITIES = ["cardiff", "newport", "pontypridd", "swansea", "bangor", "wrexham"]
+# How many of the top-ranked matches get a live Gemini + web-search lookup.
+# Each one costs a search and shares a single Gemini call, so this is capped
+# to stay inside the API key's small daily quota.
+ENRICH_LIMIT = 10
+
+# Nation-level filters, so a student can type "Scotland" instead of naming a
+# city. Any city not listed here is in England.
+REGION_CITIES = {
+    "wales": {
+        "aberystwyth", "bangor", "cardiff", "carmarthen", "newport",
+        "pontypridd", "swansea", "wrexham",
+    },
+    "scotland": {
+        "aberdeen", "dundee", "edinburgh", "glasgow", "inverness",
+        "paisley", "st andrews", "stirling",
+    },
+    "northern ireland": {"belfast", "derry", "londonderry"},
+}
+REGION_ALIASES = {
+    "cymru": "wales",
+    "alba": "scotland",
+    "scottish": "scotland",
+    "welsh": "wales",
+    "ni": "northern ireland",
+    "n. ireland": "northern ireland",
+}
 
 
-def _filter_fallback_dataset(gpa, ielts, budget, course, city):
+def _region_match(search_city: str, uni_city: str) -> Optional[bool]:
+    """True/False if `search_city` is a nation name, else None (not a region)."""
+    region = REGION_ALIASES.get(search_city, search_city)
+    if region == "england":
+        non_english = set().union(*REGION_CITIES.values())
+        return uni_city not in non_english
+    cities = REGION_CITIES.get(region)
+    if cities is None:
+        return None
+    return uni_city in cities or region in uni_city
+
+
+def _filter_universities(gpa, ielts, budget, course, city):
     results = []
     for uni in UNIVERSITIES:
         if gpa is not None and uni["min_gpa"] is not None and gpa < uni["min_gpa"]:
@@ -58,16 +97,52 @@ def _filter_fallback_dataset(gpa, ielts, budget, course, city):
             search_city = city.strip().lower()
             uni_city = uni["city"].lower()
 
-            if search_city == "wales":
-                if uni_city not in WALES_CITIES and "wales" not in uni_city:
+            region_hit = _region_match(search_city, uni_city)
+            if region_hit is not None:
+                if not region_hit:
                     continue
-            else:
-                if search_city not in uni_city:
-                    continue
+            elif search_city not in uni_city:
+                continue
 
         results.append(uni)
 
     return results
+
+
+def _rank(candidates, gpa, ielts):
+    """Best fit first, so the live-lookup budget is spent on the universities
+    the student is most likely to actually care about. Ties break on cheaper
+    tuition, then name, to keep ordering stable across identical requests."""
+
+    def score(uni):
+        margin = 0.0
+        if gpa is not None and uni["min_gpa"] is not None:
+            margin += gpa - uni["min_gpa"]
+        if ielts is not None:
+            margin += ielts - uni["min_ielts"]
+        return (-margin, uni["annual_tuition_gbp"], uni["name"])
+
+    return sorted(candidates, key=score)
+
+
+def _as_result(uni: dict) -> dict:
+    """Shape a static entry like an enriched one, so the frontend can render
+    both from a single card component. `data_status` is what tells the two
+    apart in the UI."""
+    return {
+        "id": uni["id"],
+        "name": uni["name"],
+        "city": uni["city"],
+        "annual_tuition_gbp": uni["annual_tuition_gbp"],
+        "min_gpa": uni["min_gpa"],
+        "min_ielts": uni["min_ielts"],
+        "scholarship": uni.get("scholarship", ""),
+        "intakes": uni.get("intakes", []),
+        "courses": uni.get("courses", []),
+        "why_it_matches": "",
+        "official_url": "",
+        "data_status": uni.get("data_status", "Estimated - please verify"),
+    }
 
 
 def _find_in_fallback_dataset(name: str) -> Optional[dict]:
@@ -112,13 +187,36 @@ def get_universities(
     course: Optional[str] = Query(None, description="Subject/course keyword, e.g. 'Computer Science'"),
     city: Optional[str] = Query(None, description="Preferred city or region, e.g. 'London'"),
 ):
-    candidates = _filter_fallback_dataset(gpa, ielts, budget, course, city)
+    candidates = _rank(_filter_universities(gpa, ielts, budget, course, city), gpa, ielts)
+    if not candidates:
+        return {"count": 0, "results": [], "source": "none", "enriched_count": 0}
+
+    top, rest = candidates[:ENRICH_LIMIT], candidates[ENRICH_LIMIT:]
+
     try:
-        results = gemini_client.search_universities(gpa, ielts, budget, course, city, candidates)
-        return {"count": len(results), "results": results, "source": "gemini"}
+        enriched = gemini_client.search_universities(gpa, ielts, budget, course, city, top)
     except Exception:
-        logger.exception("search_universities failed, falling back to static dataset")
-        return {"count": len(candidates), "results": candidates, "source": "fallback"}
+        logger.exception("search_universities failed, serving estimated data only")
+        results = [_as_result(u) for u in candidates]
+        return {
+            "count": len(results),
+            "results": results,
+            "source": "fallback",
+            "enriched_count": 0,
+        }
+
+    # Anything Gemini dropped from `top` still deserves to be shown, just
+    # without the live figures.
+    enriched_names = {r["name"].strip().lower() for r in enriched}
+    remainder = [u for u in top if u["name"].strip().lower() not in enriched_names] + rest
+
+    results = enriched + [_as_result(u) for u in remainder]
+    return {
+        "count": len(results),
+        "results": results,
+        "source": "gemini",
+        "enriched_count": len(enriched),
+    }
 
 
 class UniversityDetailsRequest(BaseModel):
@@ -173,6 +271,16 @@ def get_all_courses():
 
 @app.get("/cities")
 def get_all_cities():
-    all_cities = {uni["city"] for uni in UNIVERSITIES}
-    all_cities.add("Wales")
-    return {"cities": sorted(all_cities)}
+    all_cities = sorted({uni["city"] for uni in UNIVERSITIES})
+    # Nations first — they're the broadest, most useful filters.
+    regions = ["England", "Scotland", "Wales", "Northern Ireland"]
+    return {"cities": regions + all_cities}
+
+
+@app.get("/stats")
+def get_stats():
+    return {
+        "university_count": len(UNIVERSITIES),
+        "city_count": len({uni["city"] for uni in UNIVERSITIES}),
+        "course_count": len({c for uni in UNIVERSITIES for c in uni.get("courses", [])}),
+    }
