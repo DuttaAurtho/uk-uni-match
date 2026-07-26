@@ -18,6 +18,17 @@ export default function Footer() {
           university&apos;s official admissions page before applying.
         </p>
       </div>
+      <div className="border-t border-border">
+        <div className="mx-auto max-w-6xl px-6 py-4 text-center text-xs text-text-muted">
+          Built by Aurtho Dutta &middot;{" "}
+          <a
+            href="mailto:dutta.aurtho@gmail.com"
+            className="text-navy-light hover:text-navy transition-colors"
+          >
+            dutta.aurtho@gmail.com
+          </a>
+        </div>
+      </div>
     </footer>
   );
 }
