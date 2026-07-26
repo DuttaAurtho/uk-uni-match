@@ -160,6 +160,16 @@ def _as_result(uni: dict) -> dict:
     }
 
 
+def _attach_official(results: List[dict], source_rows: List[dict]) -> None:
+    """Copy the official statistics onto results built elsewhere, matching on
+    name. Every result carries an `official` key (possibly None) so the
+    frontend never has to distinguish 'no data' from 'field absent'."""
+    by_name = {u["name"].strip().lower(): u for u in source_rows}
+    for result in results:
+        row = by_name.get((result.get("name") or "").strip().lower())
+        result["official"] = _official_block(row) if row else None
+
+
 def _official_block(uni: dict) -> Optional[dict]:
     """The Discover Uni figures for a university, or None if never synced."""
     if not uni.get("official_last_synced"):
@@ -225,6 +235,11 @@ def get_universities(
 
     try:
         enriched = gemini_client.search_universities(gpa, ielts, budget, course, city, top)
+        # The enrichment path builds its own dicts from the model response, so
+        # it doesn't carry the official statistics. Re-attach them from the
+        # matching DB row — otherwise the top results (the ones a student
+        # actually reads) would be the only ones missing the field.
+        _attach_official(enriched, top)
     except Exception:
         logger.exception("search_universities failed, serving estimated data only")
         results = [_as_result(u) for u in candidates]
