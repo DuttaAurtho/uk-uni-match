@@ -8,3 +8,8 @@ backend/venv/
 backend/__pycache__/
 backend/*.pyc
 backend/.env
+
+# SQLite database (rebuilt from universities_data.json + the sync script)
+backend/universities.db
+backend/universities.db-journal
+backend/data/

@@ -1,7 +1,5 @@
-import json
 import logging
 import os
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
@@ -9,6 +7,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+import db
 import gemini_client
 
 load_dotenv()
@@ -44,10 +43,10 @@ app.add_middleware(
 # still sees every university they qualify for. GPA is on the Bangladeshi HSC
 # scale (out of 5.0). "courses" = subject areas each university offers.
 # ---------------------------------------------------------------------------
-DATA_FILE = Path(__file__).parent / "universities_data.json"
-
-with open(DATA_FILE, "r", encoding="utf-8") as f:
-    UNIVERSITIES = json.load(f)
+# Loaded from SQLite. db.init() migrates and, on a fresh database, seeds from
+# universities_data.json — which is now the seed for our *estimated* figures
+# only. Official statistics land separately via scripts/sync_discover_uni.py.
+UNIVERSITIES = db.init()
 
 # How many of the top-ranked matches get a live Gemini + web-search lookup.
 # Each one costs a search and shares a single Gemini call, so this is capped
@@ -154,6 +153,25 @@ def _as_result(uni: dict) -> dict:
         "why_it_matches": "",
         "official_url": "",
         "data_status": uni.get("data_status", "Estimated - please verify"),
+        # Official Discover Uni statistics, kept in their own namespace so the
+        # UI can badge them as verified government data — unlike the tuition
+        # and IELTS figures above, which remain our estimates.
+        "official": _official_block(uni),
+    }
+
+
+def _official_block(uni: dict) -> Optional[dict]:
+    """The Discover Uni figures for a university, or None if never synced."""
+    if not uni.get("official_last_synced"):
+        return None
+    return {
+        "nss_satisfaction": uni.get("official_nss_satisfaction"),
+        "employment_pct": uni.get("official_employment_pct"),
+        "median_salary_gbp": uni.get("official_median_salary_gbp"),
+        "continuation_pct": uni.get("official_continuation_pct"),
+        "course_count": uni.get("official_course_count"),
+        "source": uni.get("official_source"),
+        "last_synced": uni.get("official_last_synced"),
     }
 
 
