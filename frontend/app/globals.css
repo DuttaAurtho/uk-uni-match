@@ -5,17 +5,27 @@
   --surface: #FFFFFF;
   --navy: #16233F;
   --navy-light: #24365C;
+  --navy-darker: #0D1526;
   --gold: #C9A227;
+  --gold-light: #E4C767;
   --gold-dark: #A9860F;
   --text-primary: #16233F;
   --text-secondary: #57617A;
+  --text-muted: #8991A6;
   --success: #2F7D5C;
   --success-bg: #E7F2EC;
+  --danger: #B3432B;
+  --danger-bg: #FBEAE5;
   --border: #E2E5EC;
 
-  --font-display: Georgia, "Times New Roman", Times, serif;
+  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", Times, serif;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-sm: 0 1px 2px rgba(22, 35, 63, 0.06);
+  --shadow-md: 0 4px 16px rgba(22, 35, 63, 0.08);
+  --shadow-lg: 0 12px 32px rgba(22, 35, 63, 0.14);
+  --shadow-gold: 0 8px 24px rgba(201, 162, 39, 0.25);
 }
 
 @theme inline {
@@ -23,20 +33,209 @@
   --color-surface: var(--surface);
   --color-navy: var(--navy);
   --color-navy-light: var(--navy-light);
+  --color-navy-darker: var(--navy-darker);
   --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
   --color-success: var(--success);
   --color-success-bg: var(--success-bg);
+  --color-danger: var(--danger);
+  --color-danger-bg: var(--danger-bg);
   --color-border: var(--border);
   --font-display: var(--font-display);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   background: var(--background);
   color: var(--text-primary);
   font-family: var(--font-body);
+}
+
+::selection {
+  background: var(--gold-light);
+  color: var(--navy-darker);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Scrollbar                                                               */
+/* ---------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cfd4e0;
+  border-radius: 999px;
+  border: 2px solid var(--background);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b7bdcd;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Animations                                                              */
+/* ---------------------------------------------------------------------- */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+@keyframes float-glow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-2%, 3%) scale(1.05); }
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.92); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounce-down {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease both;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #ECEEF3 25%, #F6F7FA 37%, #ECEEF3 63%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.glow-orb {
+  animation: float-glow 10s ease-in-out infinite;
+}
+
+.scroll-cue {
+  animation: bounce-down 1.8s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Hero background texture                                                */
+/* ---------------------------------------------------------------------- */
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 100%);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Range sliders                                                          */
+/* ---------------------------------------------------------------------- */
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold) var(--fill, 50%), var(--border) var(--fill, 50%));
+  outline: none;
+  cursor: pointer;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 3px solid var(--gold);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: var(--shadow-gold);
+}
+
+.range-slider::-webkit-slider-thumb:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+  border: 3px solid var(--gold);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.range-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Utility                                                                 */
+/* ---------------------------------------------------------------------- */
+.text-balance {
+  text-wrap: balance;
+}
+
+.card-hover {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--gold);
+}
+
+.focus-gold:focus {
+  outline: none;
+}
+.focus-gold:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.35);
+  border-color: var(--gold);
 }
