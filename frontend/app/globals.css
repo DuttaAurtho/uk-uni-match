@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F4F5F8;
+  --surface: #FFFFFF;
+  --navy: #16233F;
+  --navy-light: #24365C;
+  --gold: #C9A227;
+  --gold-dark: #A9860F;
+  --text-primary: #16233F;
+  --text-secondary: #57617A;
+  --success: #2F7D5C;
+  --success-bg: #E7F2EC;
+  --border: #E2E5EC;
+
+  --font-display: Georgia, "Times New Roman", Times, serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-gold: var(--gold);
+  --color-gold-dark: var(--gold-dark);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-border: var(--border);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
