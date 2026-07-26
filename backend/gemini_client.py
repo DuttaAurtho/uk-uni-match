@@ -1,41 +1,32 @@
-"""Gemini-backed lookups for university search, detail, and chat.
+"""LLM-backed lookups for university search, detail, and chat.
+
+Despite the module name this is provider-agnostic: the actual model call goes
+through `llm_provider`, which runs on Gemini or Claude depending on
+LLM_PROVIDER. Everything here — prompt building, search, caching, parsing — is
+shared between them.
 
 Real-time facts come from a free DuckDuckGo web search (no API key, no
-billing) whose snippets are fed into Gemini's plain `generate_content` call
-as context — this stands in for Gemini's own Google Search grounding tool,
-which requires a billing-enabled project and isn't available here. Callers
-(main.py) are expected to catch exceptions from these functions and fall
-back to the static dataset.
+billing) whose snippets are fed to the model as context — this stands in for
+Gemini's own Google Search grounding tool, which requires a billing-enabled
+project and isn't available here. Callers (main.py) are expected to catch
+exceptions from these functions and fall back to the static dataset.
 """
 
 import json
-import os
 import re
 import time
 from concurrent.futures import ThreadPoolExecutor
 
 from ddgs import DDGS
 from dotenv import load_dotenv
-from google import genai
-from google.genai import types
+
+import llm_provider
 
 load_dotenv()
 
-MODEL_NAME = os.environ.get("GEMINI_MODEL", "gemini-flash-latest")
 CACHE_TTL_SECONDS = 6 * 60 * 60
 
-_client = None
 _cache = {}
-
-
-def _get_client():
-    global _client
-    if _client is None:
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            raise RuntimeError("GEMINI_API_KEY is not set")
-        _client = genai.Client(api_key=api_key)
-    return _client
 
 
 def _cache_get(key):
@@ -213,18 +204,7 @@ def _extract_json(text):
 
 
 def _generate(prompt, system_instruction, temperature=0.3):
-    client = _get_client()
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt,
-        config=types.GenerateContentConfig(
-            system_instruction=system_instruction,
-            temperature=temperature,
-        ),
-    )
-    if not response.text:
-        raise ValueError("Empty response from Gemini")
-    return response.text
+    return llm_provider.generate(prompt, system_instruction, temperature)
 
 
 SEARCH_SYNTHESIS_SYSTEM_INSTRUCTION = (
@@ -427,12 +407,12 @@ CHAT_SYSTEM_INSTRUCTION = (
 
 
 def chat_reply(message, history, context):
-    contents = []
-    for turn in history or []:
-        role = "model" if turn.get("role") == "assistant" else "user"
-        text = turn.get("text", "")
-        if text:
-            contents.append(types.Content(role=role, parts=[types.Part.from_text(text=text)]))
+    # Provider-neutral turn list; llm_provider maps it to each SDK's shape.
+    turns = [
+        {"role": "assistant" if t.get("role") == "assistant" else "user", "text": t.get("text", "")}
+        for t in (history or [])
+        if t.get("text")
+    ]
 
     context_lines = []
     profile = (context or {}).get("profile")
@@ -463,17 +443,6 @@ def chat_reply(message, history, context):
     if context_lines:
         user_message = "\n".join(context_lines) + "\n\nQuestion: " + message
 
-    contents.append(types.Content(role="user", parts=[types.Part.from_text(text=user_message)]))
+    turns.append({"role": "user", "text": user_message})
 
-    client = _get_client()
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=contents,
-        config=types.GenerateContentConfig(
-            system_instruction=CHAT_SYSTEM_INSTRUCTION,
-            temperature=0.5,
-        ),
-    )
-    if not response.text:
-        raise ValueError("Empty response from Gemini")
-    return response.text.strip()
+    return llm_provider.chat(turns, CHAT_SYSTEM_INSTRUCTION, temperature=0.5)
