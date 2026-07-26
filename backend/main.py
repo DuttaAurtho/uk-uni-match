@@ -1,26 +1,38 @@
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 import gemini_client
 
+load_dotenv()
+
 logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI(title="UK University Comparison Tool API")
 
+# Local dev plus the known production frontends. Vercel mints a fresh URL for
+# every preview deploy, so the regex keeps those working without a code change
+# each time; extra origins can be added via CORS_ORIGINS (comma-separated).
+DEFAULT_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://unimatch-4utmehiw5-aurtho1.vercel.app",
+    "https://unimatch-lake.vercel.app",
+]
+_extra = os.environ.get("CORS_ORIGINS", "")
+ALLOWED_ORIGINS = DEFAULT_ORIGINS + [o.strip() for o in _extra.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "https://unimatch-4utmehiw5-aurtho1.vercel.app",
-        "https://unimatch-lake.vercel.app"
-    ],
+    allow_origins=ALLOWED_ORIGINS,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )
