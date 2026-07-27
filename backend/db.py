@@ -291,6 +291,27 @@ def shutdown() -> None:
         _turso_client = None
 
 
+def describe_backend() -> Dict[str, Any]:
+    """Which store this process is actually talking to.
+
+    Worth stating out loud because the fallback is silent and its failure
+    mode is invisible until it has already cost you data: with no Turso
+    credentials the app happily uses a local SQLite file, and on a host with
+    an ephemeral filesystem that file — along with every account signed up
+    since the last deploy — is discarded on the next one.
+    """
+    configured = bool(
+        os.environ.get("TURSO_DATABASE_URL") and os.environ.get("TURSO_AUTH_TOKEN")
+    )
+    return {
+        "storage": "turso" if configured else "local-file",
+        # A local file is only durable if this host keeps its disk between
+        # deploys. Locally that's fine; on Render/Railway/Fly it is not.
+        "persistent_across_deploys": configured,
+        "path": None if configured else str(DB_PATH),
+    }
+
+
 def connect():
     """A local sqlite3 file by default; a remote Turso database if
     TURSO_DATABASE_URL/TURSO_AUTH_TOKEN are set (see .env.example) — that's

@@ -59,6 +59,29 @@ CACHE_REFRESH_INTERVAL_SECONDS = 30 * 60
 
 
 @app.on_event("startup")
+async def _warn_if_storage_is_ephemeral():
+    """Say loudly, once, if this deployment will lose its users.
+
+    Without Turso credentials the app falls back to a local SQLite file. That
+    is correct for local development and quietly destructive in production:
+    hosts like Render and Railway give each deploy a fresh filesystem, so
+    every account created since the last deploy disappears with it, and the
+    only symptom users see is being unable to sign in to an account they
+    definitely created."""
+    backend = db.describe_backend()
+    if backend["persistent_across_deploys"]:
+        logger.info("Database: Turso (persists across deploys)")
+        return
+    logger.critical(
+        "Database: local file at %s. Nothing is set for TURSO_DATABASE_URL / "
+        "TURSO_AUTH_TOKEN, so if this host replaces its filesystem between "
+        "deploys, every user account and saved list will be lost on the next "
+        "one. Set both variables on the host to fix this.",
+        backend["path"],
+    )
+
+
+@app.on_event("startup")
 async def _start_periodic_refresh():
     async def _loop():
         while True:
@@ -320,7 +343,18 @@ def _fallback_details(uni: dict) -> dict:
 
 @app.get("/")
 def root():
-    return {"status": "ok", "message": "UK University Comparison Tool API is running"}
+    # `storage` is reported here so a deployment can be checked from outside
+    # without shell access — the ephemeral-file misconfiguration is otherwise
+    # invisible until users start losing accounts. It names the backend only;
+    # no credentials, host or path are exposed.
+    backend = db.describe_backend()
+    return {
+        "status": "ok",
+        "message": "UK University Comparison Tool API is running",
+        "storage": backend["storage"],
+        "persistent_across_deploys": backend["persistent_across_deploys"],
+        "university_count": len(UNIVERSITIES),
+    }
 
 
 def _log_history_if_logged_in(user, gpa, ielts, budget, course, city, result_count,
