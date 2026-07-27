@@ -35,6 +35,9 @@ SEED_FILE = BACKEND_DIR / "universities_data.json"
 
 # Columns holding JSON-encoded lists, decoded on read.
 _JSON_COLUMNS = ("intakes", "courses", "levels")
+# Columns holding a JSON object rather than a list — decoded the same way,
+# but an empty/missing value has to become {} rather than [].
+_JSON_OBJECT_COLUMNS = ("field_sources",)
 
 # Degree levels a university is assumed to teach until an admin says otherwise.
 # Nearly every UK institution runs both, so "both" is the only honest default;
@@ -190,6 +193,18 @@ MIGRATIONS = [
     "ALTER TABLE search_history ADD COLUMN intake TEXT",
     "ALTER TABLE search_history ADD COLUMN level TEXT",
     "ALTER TABLE search_history ADD COLUMN name_query TEXT",
+    # Tuition as a range. A single number per university cannot be right:
+    # fees vary by course, level and year, so one figure is either the
+    # cheapest course quoted as if it were all of them, or an average that
+    # matches nothing. annual_tuition_gbp stays as the representative figure
+    # (sorting, ranking, the existing UI) with the range shown alongside it.
+    "ALTER TABLE universities ADD COLUMN tuition_min_gbp INTEGER",
+    "ALTER TABLE universities ADD COLUMN tuition_max_gbp INTEGER",
+    # Where each figure came from: {field: {url, quote, checked_at}}. One JSON
+    # column rather than three columns per field, so covering a new field
+    # later costs no migration. A field absent from here is an unverified
+    # estimate, and the UI is expected to say so.
+    "ALTER TABLE universities ADD COLUMN field_sources TEXT NOT NULL DEFAULT '{}'",
 ]
 
 
@@ -378,6 +393,8 @@ def _row_to_dict(row: sqlite3.Row) -> Dict[str, Any]:
     uni = dict(row)
     for column in _JSON_COLUMNS:
         uni[column] = json.loads(uni[column]) if uni.get(column) else []
+    for column in _JSON_OBJECT_COLUMNS:
+        uni[column] = json.loads(uni[column]) if uni.get(column) else {}
     return uni
 
 
@@ -399,6 +416,7 @@ def load_universities(conn: Optional[sqlite3.Connection] = None) -> List[Dict[st
 _EDITABLE_UNIVERSITY_FIELDS = (
     "name", "city", "min_gpa", "min_ielts", "annual_tuition_gbp",
     "scholarship", "intakes", "courses", "levels", "data_status", "official_url",
+    "tuition_min_gbp", "tuition_max_gbp", "field_sources",
 )
 
 
@@ -407,6 +425,9 @@ def _encode_university_fields(fields: Dict[str, Any]) -> Dict[str, Any]:
     for column in _JSON_COLUMNS:
         if column in encoded:
             encoded[column] = json.dumps(encoded[column] or [])
+    for column in _JSON_OBJECT_COLUMNS:
+        if column in encoded:
+            encoded[column] = json.dumps(encoded[column] or {})
     return encoded
 
 

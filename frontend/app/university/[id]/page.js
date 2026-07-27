@@ -19,6 +19,13 @@ import {
   IconWallet,
 } from "../../components/icons";
 import { api, API_URL } from "../../lib/api";
+import {
+  formatCheckedAt,
+  formatGbp,
+  formatTuition,
+  isVerified,
+  sourceFor,
+} from "../../lib/figures";
 import { useAuth } from "../../lib/AuthContext";
 
 // The written sections, in the order a student actually works through them:
@@ -81,7 +88,7 @@ function StatRow({ label, value, suffix = "" }) {
   );
 }
 
-function Fact({ icon: Icon, label, value }) {
+function Fact({ icon: Icon, label, value, verified }) {
   return (
     <div className="px-4 py-3">
       <p className="fact-label flex items-center gap-1.5">
@@ -89,7 +96,83 @@ function Fact({ icon: Icon, label, value }) {
         {label}
       </p>
       <p className="mt-1 text-sm font-bold text-text-primary">{value}</p>
+      {verified !== undefined && (
+        <p
+          className={`text-[11px] mt-0.5 ${
+            verified ? "text-success" : "text-text-muted"
+          }`}
+        >
+          {verified ? "Sourced" : "Estimate"}
+        </p>
+      )}
     </div>
+  );
+}
+
+/** Every figure on this page with its citation, or an explicit admission
+ *  that we could not source it. Shown in full rather than as a badge,
+ *  because "where did this number come from" is the question that decides
+ *  whether a student trusts any of the rest. */
+function Provenance({ uni }) {
+  const fields = [
+    ["annual_tuition_gbp", "Tuition"],
+    ["min_ielts", "English requirement"],
+    ["min_gpa", "Academic requirement"],
+  ];
+  return (
+    <section className="bg-surface border border-border border-l-2 border-l-navy-light rounded-md p-5">
+      <h2 className="text-base font-bold text-text-primary">
+        Where these figures come from
+      </h2>
+      <div className="mt-3 space-y-3">
+        {fields.map(([field, label]) => {
+          const src = sourceFor(uni, field);
+          return (
+            <div key={field} className="text-sm">
+              <p className="font-semibold text-text-primary">
+                {label}
+                {src ? (
+                  <span className="ml-2 text-xs font-medium text-success">
+                    quoted from source
+                  </span>
+                ) : (
+                  <span className="ml-2 text-xs font-medium text-text-muted">
+                    unverified estimate
+                  </span>
+                )}
+              </p>
+              {src ? (
+                <>
+                  <blockquote className="card-blurb mt-1 text-text-secondary italic">
+                    “{src.quote}”
+                  </blockquote>
+                  <p className="mt-1 text-xs text-text-muted">
+                    {src.url && (
+                      <a
+                        href={src.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="link-blue"
+                      >
+                        {new URL(src.url).hostname.replace(/^www\./, "")}
+                      </a>
+                    )}
+                    {formatCheckedAt(src.checked_at) &&
+                      ` · checked ${formatCheckedAt(src.checked_at)}`}
+                  </p>
+                </>
+              ) : (
+                <p className="mt-1 text-text-secondary">
+                  Our own estimate, not taken from a published page. Treat it as
+                  a rough guide and confirm on the university&apos;s own site
+                  before you rely on it.
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -350,10 +433,16 @@ function UniversityPageInner() {
             <Fact
               icon={IconWallet}
               label="Tuition"
-              value={`£${Number(uni.annual_tuition_gbp || 0).toLocaleString()}/yr`}
+              value={`${formatTuition(uni)}/yr`}
+              verified={isVerified(uni, "annual_tuition_gbp")}
             />
             <Fact icon={IconGraduationCap} label="Degree levels" value={levels.join(" · ") || "—"} />
-            <Fact icon={IconChat} label="Min IELTS" value={uni.min_ielts ?? "—"} />
+            <Fact
+              icon={IconChat}
+              label="Min IELTS"
+              value={uni.min_ielts ?? "—"}
+              verified={isVerified(uni, "min_ielts")}
+            />
             <Fact icon={IconAward} label="Min GPA" value={uni.min_gpa ?? "—"} />
             <Fact
               icon={IconCalendar}
@@ -436,9 +525,9 @@ function UniversityPageInner() {
                   </section>
                 )}
 
-                <p className="text-xs text-text-muted">
-                  {uni.data_status}
-                </p>
+                <Provenance uni={uni} />
+
+                <p className="text-xs text-text-muted">{uni.data_status}</p>
               </div>
             )}
           </div>
@@ -466,9 +555,9 @@ function UniversityPageInner() {
                   <FitRow
                     label="Your budget"
                     you={num(profile.budget)}
-                    needs={uni.annual_tuition_gbp}
+                    needs={uni.tuition_min_gbp ?? uni.annual_tuition_gbp}
                     higherIsBetter
-                    format={(v) => `£${Number(v).toLocaleString()}`}
+                    format={formatGbp}
                   />
                 </div>
               ) : (

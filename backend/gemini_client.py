@@ -18,6 +18,7 @@ import re
 import time
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 
 from ddgs import DDGS
 from dotenv import load_dotenv
@@ -261,12 +262,37 @@ def _level_phrase(level):
 SEARCH_SYNTHESIS_SYSTEM_INSTRUCTION = (
     "You are a UK higher-education admissions research assistant for "
     "prospective international students, particularly from Bangladesh. "
-    "For each university you'll be given a rough existing estimate plus "
-    "real web search snippets — prefer the search snippets whenever they "
-    "cover a fact, since the estimate may be outdated; otherwise keep the "
-    "estimate rather than guessing something new. Respond with ONLY a "
-    "JSON array, no prose, no markdown fences."
+    "For each university you'll be given a rough existing estimate plus real "
+    "evidence (official page text and web search snippets). Facts must come "
+    "from that evidence, never from memory: when you state a tuition fee or "
+    "an English-language requirement you must also return the exact sentence "
+    "from the evidence that supports it, copied verbatim. If the evidence "
+    "does not support a figure, return null for it and keep the existing "
+    "estimate — an honest gap is worth more than a confident guess. "
+    "Respond with ONLY a JSON array, no prose, no markdown fences."
 )
+
+# A quote only counts if it actually appears in the evidence we supplied.
+# Normalising whitespace, quote marks and case first, because models
+# reflow and re-punctuate what they copy even when the substance is exact.
+_QUOTE_MIN_CHARS = 12
+
+
+def _normalise_for_match(text: str) -> str:
+    text = (text or "").lower().replace("’", "'").replace("“", '"').replace("”", '"')
+    text = text.replace("£", "£").replace("–", "-").replace("—", "-")
+    return " ".join(text.split())
+
+
+def _quote_is_grounded(quote: str, evidence: str) -> bool:
+    """Did this sentence really come from the text we handed the model?
+
+    This is the whole anti-invention mechanism: a figure is only accepted if
+    its supporting sentence is present in the evidence, so a number recalled
+    from training data has nothing to cite and gets dropped."""
+    if not quote or len(quote.strip()) < _QUOTE_MIN_CHARS:
+        return False
+    return _normalise_for_match(quote) in _normalise_for_match(evidence)
 
 
 def search_universities(gpa, ielts, budget, course, city, candidates, intake=None, level=None):
@@ -354,11 +380,23 @@ Using the real evidence below for each university — official page content wher
 web search results — return a JSON array where each item has exactly these keys:
 - "name": string
 - "city": string
-- "annual_tuition_gbp": number, estimated annual tuition in GBP for an
-  international student in the relevant course{level_note}
+- "annual_tuition_gbp": number, a representative annual international
+  tuition fee in GBP{level_note}
+- "tuition_min_gbp": number or null, the LOWEST annual international fee
+  the evidence shows for this university
+- "tuition_max_gbp": number or null, the HIGHEST annual international fee
+  the evidence shows. Fees differ by course, so give the real spread rather
+  than repeating one number — null both if the evidence shows only one.
+- "tuition_quote": string or null, the exact sentence from the evidence
+  above that states the fee, copied word for word. null if the evidence
+  does not state a fee.
+- "tuition_source_url": string or null, the URL the quote came from
 - "min_gpa": number or null, typical minimum HSC/GPA equivalent out of 5.0
   if determinable, else null
 - "min_ielts": number, typical minimum IELTS overall band required
+- "ielts_quote": string or null, the exact sentence from the evidence that
+  states the English requirement, copied word for word
+- "ielts_source_url": string or null, the URL that quote came from
 - "scholarship": string, one short sentence about scholarships for
   international students
 - "intakes": array of strings, e.g. ["September", "January"]
@@ -388,6 +426,45 @@ Only return the JSON array, nothing else."""
         if not name or name.lower() in seen_names:
             continue
         seen_names.add(name.lower())
+
+        # Everything we actually showed the model for this university. A
+        # quote has to be findable in here to be believed.
+        evidence = " ".join(
+            [enrich_info.get("page_text", ""), enrich_info.get("search_context", "")]
+        )
+        baseline = enrich_info.get("baseline", {})
+        sources = {}
+
+        def _grounded(value, quote_key, url_key, fields):
+            """Accept `value` only with a quote we can find in the evidence;
+            otherwise fall back to the stored estimate, unattributed."""
+            quote = item.get(quote_key)
+            if value is None or not _quote_is_grounded(quote, evidence):
+                return False
+            entry = {
+                "quote": quote.strip(),
+                "url": _clean_url(item.get(url_key)) or enrich_info.get("ac_uk_url") or "",
+                "checked_at": datetime.now(timezone.utc).date().isoformat(),
+            }
+            for field in fields:
+                sources[field] = entry
+            return True
+
+        tuition = item.get("annual_tuition_gbp")
+        tuition_ok = _grounded(
+            tuition, "tuition_quote", "tuition_source_url",
+            ["annual_tuition_gbp", "tuition_min_gbp", "tuition_max_gbp"],
+        )
+        if not tuition_ok:
+            tuition = baseline.get("annual_tuition_gbp")
+
+        ielts = item.get("min_ielts")
+        ielts_ok = _grounded(ielts, "ielts_quote", "ielts_source_url", ["min_ielts"])
+        if not ielts_ok:
+            ielts = baseline.get("min_ielts")
+
+        tuition_min = item.get("tuition_min_gbp") if tuition_ok else baseline.get("tuition_min_gbp")
+        tuition_max = item.get("tuition_max_gbp") if tuition_ok else baseline.get("tuition_max_gbp")
         official_url = (
             enrich_info.get("ac_uk_url")
             or _clean_url(item.get("official_url"))
@@ -398,9 +475,14 @@ Only return the JSON array, nothing else."""
                 "id": re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-"),
                 "name": name,
                 "city": item.get("city", ""),
-                "annual_tuition_gbp": item.get("annual_tuition_gbp"),
+                "annual_tuition_gbp": tuition,
+                "tuition_min_gbp": tuition_min,
+                "tuition_max_gbp": tuition_max,
                 "min_gpa": item.get("min_gpa"),
-                "min_ielts": item.get("min_ielts"),
+                "min_ielts": ielts,
+                # Which figures above are backed by a quote we verified, and
+                # where it came from. Anything missing here is an estimate.
+                "field_sources": sources,
                 "scholarship": item.get("scholarship", ""),
                 "intakes": item.get("intakes", []) or [],
                 "courses": item.get("courses", []) or [],
@@ -410,7 +492,11 @@ Only return the JSON array, nothing else."""
                 "levels": enrich_info.get("baseline", {}).get("levels", []),
                 "why_it_matches": item.get("why_it_matches", ""),
                 "official_url": official_url,
-                "data_status": "Live data via Gemini + web search — verify before applying",
+                "data_status": (
+                    "Live data, figures quoted from source — verify before applying"
+                    if sources
+                    else "Estimated - no supporting source found in this lookup"
+                ),
             }
         )
 

@@ -176,8 +176,13 @@ def _filter_universities(gpa, ielts, budget, course, city, intake=None, level=No
             continue
         if ielts is not None and ielts < uni["min_ielts"]:
             continue
-        if budget is not None and uni["annual_tuition_gbp"] > budget:
-            continue
+        if budget is not None:
+            # Fees vary by course, so the range's floor is what decides
+            # affordability: if the cheapest course fits the budget, the
+            # university is a real option.
+            cheapest = uni.get("tuition_min_gbp") or uni["annual_tuition_gbp"]
+            if cheapest > budget:
+                continue
         if course is not None:
             course_match = any(
                 course.strip().lower() in c.lower() for c in uni.get("courses", [])
@@ -226,6 +231,8 @@ def _as_result(uni: dict) -> dict:
         "name": uni["name"],
         "city": uni["city"],
         "annual_tuition_gbp": uni["annual_tuition_gbp"],
+        "tuition_min_gbp": uni.get("tuition_min_gbp"),
+        "tuition_max_gbp": uni.get("tuition_max_gbp"),
         "min_gpa": uni["min_gpa"],
         "min_ielts": uni["min_ielts"],
         "scholarship": uni.get("scholarship", ""),
@@ -233,6 +240,10 @@ def _as_result(uni: dict) -> dict:
         "courses": uni.get("courses", []),
         "levels": uni.get("levels", []),
         "why_it_matches": "",
+        # {field: {quote, url, checked_at}} for figures backed by a source we
+        # verified. A field absent here is an unverified estimate and the UI
+        # says so — see gemini_client._quote_is_grounded.
+        "field_sources": uni.get("field_sources") or {},
         "official_url": uni.get("official_url") or "",
         "data_status": uni.get("data_status", "Estimated - please verify"),
         # Official Discover Uni statistics, kept in their own namespace so the

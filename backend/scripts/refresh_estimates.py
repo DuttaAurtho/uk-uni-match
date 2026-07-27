@@ -33,6 +33,7 @@ import gemini_client  # noqa: E402
 log = logging.getLogger("refresh_estimates")
 
 _JSON_COLUMNS = ("intakes", "courses", "levels")
+_JSON_OBJECT_COLUMNS = ("field_sources",)
 
 
 def _decode(rows):
@@ -41,6 +42,8 @@ def _decode(rows):
         uni = dict(row)
         for column in _JSON_COLUMNS:
             uni[column] = json.loads(uni[column]) if uni.get(column) else []
+        for column in _JSON_OBJECT_COLUMNS:
+            uni[column] = json.loads(uni[column]) if uni.get(column) else {}
         batch.append(uni)
     return batch
 
@@ -98,10 +101,20 @@ def main() -> int:
                     continue
                 enriched_names.add(target["name"].strip().lower())
 
+                # A figure the model could not source falls back to the
+                # stored estimate inside search_universities, so writing it
+                # back is a no-op rather than a downgrade. The citations are
+                # what make the row better than it was.
+                sources = item.get("field_sources") or {}
+                merged_sources = {**(target.get("field_sources") or {}), **sources}
+
                 fields = {
                     "min_gpa": item.get("min_gpa"),
                     "min_ielts": item.get("min_ielts"),
                     "annual_tuition_gbp": item.get("annual_tuition_gbp"),
+                    "tuition_min_gbp": item.get("tuition_min_gbp"),
+                    "tuition_max_gbp": item.get("tuition_max_gbp"),
+                    "field_sources": merged_sources,
                     "scholarship": item.get("scholarship"),
                     "intakes": item.get("intakes") or [],
                     "courses": item.get("courses") or [],

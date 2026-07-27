@@ -28,6 +28,8 @@ class UniversityUpsert(BaseModel):
     min_gpa: Optional[float] = None
     min_ielts: Optional[float] = None
     annual_tuition_gbp: Optional[int] = None
+    tuition_min_gbp: Optional[int] = None
+    tuition_max_gbp: Optional[int] = None
     scholarship: Optional[str] = ""
     intakes: List[str] = []
     courses: List[str] = []
@@ -42,6 +44,8 @@ class UniversityPatch(BaseModel):
     min_gpa: Optional[float] = None
     min_ielts: Optional[float] = None
     annual_tuition_gbp: Optional[int] = None
+    tuition_min_gbp: Optional[int] = None
+    tuition_max_gbp: Optional[int] = None
     scholarship: Optional[str] = None
     intakes: Optional[List[str]] = None
     courses: Optional[List[str]] = None

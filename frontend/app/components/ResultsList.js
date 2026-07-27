@@ -11,6 +11,7 @@ import {
   IconStar,
   IconGraduationCap,
 } from "./icons";
+import { formatTuition, isVerified } from "../lib/figures";
 
 function matchTier(uni, form) {
   const gpa = form.gpa === "" ? null : Number(form.gpa);
@@ -193,9 +194,12 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFa
 
         <p className="text-right ml-auto">
           <span className="text-base font-bold text-text-primary">
-            £{uni.annual_tuition_gbp.toLocaleString()}
+            {formatTuition(uni)}
           </span>
           <span className="text-sm text-text-secondary">/yr</span>
+          <span className="block text-[11px] text-text-muted">
+            {isVerified(uni, "annual_tuition_gbp") ? "from official source" : "estimate"}
+          </span>
         </p>
       </div>
 
