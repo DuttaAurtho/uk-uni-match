@@ -1,8 +1,17 @@
-"""OTP delivery over SMTP.
+"""OTP delivery, over an HTTPS mail API where one is configured, else SMTP.
 
-Gmail (with an App Password, not the account password) is the default
-provider for this project — see .env.example. Raises on failure like
-gemini_client does; the caller (routes_auth.py) decides the fallback.
+Three transports, chosen by which credentials are present: Brevo, then
+Resend, then SMTP. The order is not arbitrary —
+
+  Brevo   verifies a single sender address by emailing you a link, so a plain
+          Gmail address can send to anyone. No domain required.
+  Resend  only delivers to your own account address until you verify a whole
+          domain over DNS, so real users cannot be reached without one.
+  SMTP    works locally but is blocked outbound by many hosts (Render's free
+          tier included), where it fails exactly like a bad password.
+
+Raises on failure like gemini_client does; the caller (routes_auth.py)
+decides what the user sees.
 """
 
 import json
@@ -61,6 +70,8 @@ def describe_backend() -> dict:
     Reported at startup and on GET / because a mis-set mail config is
     invisible from outside until a user tries to sign up and gets stuck
     with no way to verify."""
+    if os.environ.get("BREVO_API_KEY"):
+        return {"email": "brevo", "configured": True}
     if os.environ.get("RESEND_API_KEY"):
         return {"email": "resend", "configured": True}
     host = os.environ.get("SMTP_HOST")
@@ -69,6 +80,57 @@ def describe_backend() -> dict:
     if host and user and password:
         return {"email": "smtp", "configured": True, "host": host}
     return {"email": "unconfigured", "configured": False}
+
+
+def _sender() -> tuple:
+    """(name, address) mail is sent as."""
+    raw = os.environ.get("EMAIL_FROM") or os.environ.get("SMTP_USER") or ""
+    if "<" in raw and ">" in raw:
+        name, address = raw.split("<", 1)
+        return name.strip() or "UK Uni Match", address.rstrip(">").strip()
+    return "UK Uni Match", raw.strip()
+
+
+def _send_via_brevo(to: str, subject: str, text: str, html: str) -> None:
+    """Send over Brevo's HTTPS API.
+
+    Preferred over Resend when both are set, for one practical reason: Resend
+    will only deliver to your own account address until you have verified a
+    whole domain via DNS, which means real users cannot receive a signup code
+    until you own a domain. Brevo verifies a single sender address by
+    emailing you a link, so a Gmail address can send to anyone within
+    minutes. Both are HTTPS, so neither is affected by hosts that block SMTP
+    ports.
+    """
+    name, address = _sender()
+    if not address:
+        raise RuntimeError("EMAIL_FROM (or SMTP_USER) must name the sender address verified with Brevo")
+
+    payload = json.dumps(
+        {
+            "sender": {"name": name, "email": address},
+            "to": [{"email": to}],
+            "subject": subject,
+            "textContent": text,
+            "htmlContent": html,
+        }
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=payload,
+        headers={
+            "api-key": os.environ["BREVO_API_KEY"],
+            "content-type": "application/json",
+            "accept": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            response.read()
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")[:300]
+        raise RuntimeError(f"Brevo rejected the message ({exc.code}): {detail}") from exc
 
 
 def _send_via_resend(to: str, subject: str, text: str, html: str) -> None:
@@ -192,6 +254,9 @@ def send_otp_email(to: str, code: str, purpose: str) -> None:
     text = f"{intro}\n\n{code}\n\nThis code expires in 10 minutes."
     html = _render_html(purpose, code)
 
+    if os.environ.get("BREVO_API_KEY"):
+        _send_via_brevo(to, subject, text, html)
+        return
     if os.environ.get("RESEND_API_KEY"):
         _send_via_resend(to, subject, text, html)
         return
