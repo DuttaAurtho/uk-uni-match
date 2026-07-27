@@ -170,6 +170,12 @@ MIGRATIONS = [
     )
     """,
     "CREATE INDEX idx_chat_user ON chat_messages(user_id)",
+    # 11 — a persisted official link (previously only shown for the
+    # university a search happened to enrich live, never saved), plus a
+    # timestamp so scripts/refresh_estimates.py can rotate through the
+    # dataset oldest-refreshed-first instead of re-checking everything.
+    "ALTER TABLE universities ADD COLUMN official_url TEXT",
+    "ALTER TABLE universities ADD COLUMN estimated_last_synced TEXT",
 ]
 
 
@@ -374,7 +380,7 @@ def load_universities(conn: Optional[sqlite3.Connection] = None) -> List[Dict[st
 # intentionally excluded — those are only ever set by scripts/sync_discover_uni.py.
 _EDITABLE_UNIVERSITY_FIELDS = (
     "name", "city", "min_gpa", "min_ielts", "annual_tuition_gbp",
-    "scholarship", "intakes", "courses", "data_status",
+    "scholarship", "intakes", "courses", "data_status", "official_url",
 )
 
 

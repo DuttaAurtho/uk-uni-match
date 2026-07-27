@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 from typing import Any, Dict, List, Optional
@@ -48,6 +49,26 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(admin_router)
+
+# How often the in-memory UNIVERSITIES cache re-reads the database. Without
+# this, edits made by another process — the admin panel running elsewhere,
+# or scripts/refresh_estimates.py and scripts/sync_discover_uni.py, both of
+# which run as separate one-off processes — would be invisible here until
+# this server process next restarts.
+CACHE_REFRESH_INTERVAL_SECONDS = 30 * 60
+
+
+@app.on_event("startup")
+async def _start_periodic_refresh():
+    async def _loop():
+        while True:
+            await asyncio.sleep(CACHE_REFRESH_INTERVAL_SECONDS)
+            try:
+                db.refresh()
+            except Exception:
+                logger.exception("Periodic university cache refresh failed")
+
+    asyncio.create_task(_loop())
 
 
 @app.on_event("shutdown")
@@ -172,7 +193,7 @@ def _as_result(uni: dict) -> dict:
         "intakes": uni.get("intakes", []),
         "courses": uni.get("courses", []),
         "why_it_matches": "",
-        "official_url": "",
+        "official_url": uni.get("official_url") or "",
         "data_status": uni.get("data_status", "Estimated - please verify"),
         # Official Discover Uni statistics, kept in their own namespace so the
         # UI can badge them as verified government data — unlike the tuition
@@ -196,6 +217,10 @@ def _attach_official(results: List[dict], source_rows: List[dict]) -> None:
         result["official"] = _official_block(row) if row else None
         if row:
             result["id"] = row["id"]
+            # This search's own live lookup wins if it found one; otherwise
+            # fall back to whatever scripts/refresh_estimates.py last saved.
+            if not result.get("official_url") and row.get("official_url"):
+                result["official_url"] = row["official_url"]
 
 
 def _official_block(uni: dict) -> Optional[dict]:
@@ -238,7 +263,7 @@ def _fallback_details(uni: dict) -> dict:
         "application_deadlines": "Check the university's official admissions page for current deadlines.",
         "notable_strengths": "Offers courses in: " + ", ".join(uni.get("courses", [])) + ".",
         "visa_notes": "International students typically need a UK Student visa (CAS) — check gov.uk for current requirements.",
-        "official_url": "",
+        "official_url": uni.get("official_url") or "",
     }
 
 
@@ -318,6 +343,10 @@ class UniversityDetailsRequest(BaseModel):
 def university_details(payload: UniversityDetailsRequest):
     try:
         data = gemini_client.get_university_details(payload.name, payload.city, payload.course)
+        if not data.get("official_url"):
+            fallback_uni = _find_in_fallback_dataset(payload.name)
+            if fallback_uni and fallback_uni.get("official_url"):
+                data["official_url"] = fallback_uni["official_url"]
         return {"source": "gemini", **data}
     except Exception:
         logger.exception("get_university_details failed for %s", payload.name)

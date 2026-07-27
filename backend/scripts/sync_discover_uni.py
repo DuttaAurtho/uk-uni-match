@@ -75,7 +75,7 @@ COLUMN_CANDIDATES: Dict[str, Sequence[str]] = {
     "institution_name": ("LEGAL_NAME", "LEGALNAME", "NAME", "PROVIDERNAME", "INSTITUTION_NAME"),
     "nss_satisfaction": ("NSSAGGREGATE", "NSSOVERALL", "Q27", "Q26", "NSSSATISFACTION", "AGG"),
     "employment_pct": ("WORKSTUDY", "EMPLOYED", "GOWORKSTUDY", "EMPLOYMENTRATE", "INWORKORSTUDY"),
-    "median_salary": ("LEOMEDIAN", "MEDIAN", "SALARYMEDIAN", "GOMEDIAN", "MED"),
+    "median_salary": ("LEO3INSTMED", "LEO5INSTMED", "LEOMEDIAN", "MEDIAN", "SALARYMEDIAN", "GOMEDIAN", "MED"),
     "continuation_pct": ("UCONT", "CONTINUING", "CONTINUATIONRATE", "CONT"),
 }
 
@@ -109,6 +109,16 @@ NAME_ALIASES = {
     "university of hertfordshire higher education corporation": "University of Hertfordshire",
     "southampton solent university": "Solent University",
     "university of the west of england": "University of the West of England, Bristol",
+    # Found via the 2026-07 Discover Uni export — verified against each
+    # institution's own "legal name" disclosure, not guessed.
+    "goldsmiths' college": "Goldsmiths, University of London",
+    "imperial college of science, technology and medicine": "Imperial College London",
+    "royal holloway and bedford new college": "Royal Holloway, University of London",
+    "university of staffordshire": "Staffordshire University",
+    "birkbeck college": "Birkbeck, University of London",
+    "the university of lancaster": "Lancaster University",
+    "school of oriental and african studies": "SOAS University of London",
+    "university of south wales/prifysgol de cymru": "University of South Wales",
 }
 
 
@@ -280,8 +290,17 @@ def inspect(zip_path: Path) -> int:
     return 0
 
 
-def collect(zip_path: Path) -> Dict[str, dict]:
-    """Parse the archive into per-UKPRN aggregates."""
+def collect(zip_path: Path, index: Optional[dict] = None) -> Dict[str, dict]:
+    """Parse the archive into per-UKPRN aggregates.
+
+    `index` (our own universities, from build_index) is optional but
+    important: HESA's INSTITUTION.csv reports validated/franchise partner
+    colleges under the *same* UKPRN as the university that validates their
+    courses — e.g. UKPRN 10004930 has 7 rows, one of them "Oxford Brookes
+    University" and the other 6 unrelated FE colleges. Taking whichever row
+    happens to come last in the file silently renames the university to
+    "Global Banking School Limited" or similar. When `index` is given, a row
+    whose name matches one of ours always wins over a row that doesn't."""
     stats: Dict[str, dict] = defaultdict(
         lambda: {"name": None, "nss": [], "employment": [], "salary": [], "continuation": [], "courses": 0}
     )
@@ -310,10 +329,22 @@ def collect(zip_path: Path) -> Dict[str, dict]:
                 f"Columns present: {', '.join(fields)}\n"
                 f"Extend UKPRN_COLUMNS / COLUMN_CANDIDATES['institution_name']."
             )
+        def _is_ours(name: str) -> bool:
+            if not index or not name:
+                return False
+            key = normalise(name)
+            return key in index["by_key"] or key in index["aliases"]
+
         for row in rows:
             ukprn = (row.get(ukprn_col) or "").strip()
-            if ukprn:
-                stats[ukprn]["name"] = (row.get(name_col) or "").strip()
+            candidate_name = (row.get(name_col) or "").strip()
+            if not ukprn or not candidate_name:
+                continue
+            current = stats[ukprn]["name"]
+            if _is_ours(current):
+                continue  # already holding a name of ours; a partner-college row must not clobber it
+            if _is_ours(candidate_name) or not current:
+                stats[ukprn]["name"] = candidate_name
         log.info("institutions: %s providers from %s", len(stats), Path(member).name)
 
         # Per-course statistics, averaged per provider.
@@ -357,13 +388,13 @@ def _mean(values: List[float]) -> Optional[float]:
 
 
 def sync(zip_path: Path, dry_run: bool = False) -> int:
-    stats = collect(zip_path)
-
     conn = db.connect()
     try:
         db.migrate(conn)
         ours = conn.execute("SELECT id, name FROM universities").fetchall()
         index = build_index([r["name"] for r in ours])
+
+        stats = collect(zip_path, index=index)
 
         synced_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
         source = f"Discover Uni (HESA/OfS) — {zip_path.name}"

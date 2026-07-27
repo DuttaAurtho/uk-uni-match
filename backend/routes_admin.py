@@ -32,6 +32,7 @@ class UniversityUpsert(BaseModel):
     intakes: List[str] = []
     courses: List[str] = []
     data_status: Optional[str] = "Estimated - please verify"
+    official_url: Optional[str] = ""
 
 
 class UniversityPatch(BaseModel):
@@ -44,6 +45,7 @@ class UniversityPatch(BaseModel):
     intakes: Optional[List[str]] = None
     courses: Optional[List[str]] = None
     data_status: Optional[str] = None
+    official_url: Optional[str] = None
 
 
 @router.get("/universities")

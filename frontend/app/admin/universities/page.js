@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { api } from "../../lib/api";
-import { IconPlus, IconEdit, IconTrash, IconSearch } from "../../components/icons";
+import { IconPlus, IconEdit, IconTrash, IconSearch, IconExternalLink } from "../../components/icons";
 
 const EMPTY_FORM = {
   name: "",
@@ -14,6 +14,7 @@ const EMPTY_FORM = {
   intakes: "",
   courses: "",
   data_status: "Estimated - please verify",
+  official_url: "",
 };
 
 function toFormValues(uni) {
@@ -27,6 +28,7 @@ function toFormValues(uni) {
     intakes: (uni.intakes || []).join(", "),
     courses: (uni.courses || []).join(", "),
     data_status: uni.data_status || "",
+    official_url: uni.official_url || "",
   };
 }
 
@@ -41,6 +43,7 @@ function toPayload(values) {
     intakes: values.intakes.split(",").map((s) => s.trim()).filter(Boolean),
     courses: values.courses.split(",").map((s) => s.trim()).filter(Boolean),
     data_status: values.data_status.trim(),
+    official_url: values.official_url.trim(),
   };
 }
 
@@ -148,6 +151,15 @@ function UniversityForm({ initial, onSubmit, onCancel, submitLabel }) {
             value={values.courses}
             onChange={(e) => set("courses", e.target.value)}
             placeholder="Computer Science, Business & Management"
+            className="focus-gold w-full text-sm border border-border rounded-md px-3 py-2 bg-white"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-medium text-text-secondary mb-1">Official URL</label>
+          <input
+            value={values.official_url}
+            onChange={(e) => set("official_url", e.target.value)}
+            placeholder="https://www.example.ac.uk"
             className="focus-gold w-full text-sm border border-border rounded-md px-3 py-2 bg-white"
           />
         </div>
@@ -280,7 +292,21 @@ export default function AdminUniversitiesPage() {
               className="flex items-center gap-3 bg-surface border border-border rounded-lg px-4 py-3"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text-primary truncate">{uni.name}</p>
+                <p className="text-sm font-medium text-text-primary truncate">
+                  {uni.name}
+                  {uni.official_url && (
+                    <a
+                      href={uni.official_url}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(e) => e.stopPropagation()}
+                      className="inline-flex ml-1.5 text-text-muted hover:text-gold-dark align-middle"
+                      title={uni.official_url}
+                    >
+                      <IconExternalLink width={12} height={12} />
+                    </a>
+                  )}
+                </p>
                 <p className="text-xs text-text-muted">
                   {uni.city} · £{uni.annual_tuition_gbp?.toLocaleString()}/yr · GPA {uni.min_gpa}+ ·
                   IELTS {uni.min_ielts}+
