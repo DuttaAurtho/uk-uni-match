@@ -24,6 +24,7 @@ def _row(row: Optional[sqlite3.Row]) -> Optional[Dict[str, Any]]:
 
 def log_search(
     user_id: int, gpa, ielts, budget, course, city, result_count: int,
+    intake=None, level=None, name_query=None,
     conn: Optional[sqlite3.Connection] = None,
 ) -> None:
     own = conn is None
@@ -31,10 +32,13 @@ def log_search(
     try:
         conn.execute(
             """
-            INSERT INTO search_history (user_id, gpa, ielts, budget, course, city, result_count)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO search_history
+                (user_id, gpa, ielts, budget, course, city, result_count,
+                 intake, level, name_query)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (user_id, gpa, ielts, budget, course, city, result_count),
+            (user_id, gpa, ielts, budget, course, city, result_count,
+             intake, level, name_query),
         )
         conn.commit()
     finally:
@@ -77,7 +81,7 @@ def list_favorites(user_id: int, conn: Optional[sqlite3.Connection] = None) -> L
         results = []
         for r in rows:
             uni = dict(r)
-            for column in ("intakes", "courses"):
+            for column in ("intakes", "courses", "levels"):
                 uni[column] = json.loads(uni[column]) if uni.get(column) else []
             results.append(uni)
         return results

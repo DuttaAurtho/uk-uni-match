@@ -6,11 +6,16 @@ import { IconInbox } from "../../components/icons";
 
 function summarize(entry) {
   const bits = [];
+  if (entry.name_query) bits.push(`“${entry.name_query}”`);
   if (entry.gpa != null) bits.push(`GPA ${entry.gpa}`);
   if (entry.ielts != null) bits.push(`IELTS ${entry.ielts}`);
   if (entry.budget != null) bits.push(`Budget £${Number(entry.budget).toLocaleString()}`);
-  if (entry.course) bits.push(entry.course);
+  // Level and course read as one degree ("MSc Computer Science") when both
+  // are set, matching how the search form presents them.
+  if (entry.course) bits.push([entry.level, entry.course].filter(Boolean).join(" "));
+  else if (entry.level) bits.push(entry.level);
   if (entry.city) bits.push(entry.city);
+  if (entry.intake) bits.push(`${entry.intake} intake`);
   return bits.length ? bits.join(" · ") : "No filters";
 }
 

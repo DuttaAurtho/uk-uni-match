@@ -9,6 +9,7 @@ import {
   IconLayoutGrid,
   IconLayoutList,
   IconStar,
+  IconGraduationCap,
 } from "./icons";
 
 function matchTier(uni, form) {
@@ -65,6 +66,9 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFa
   const visibleCourses = compact ? uni.courses.slice(0, 3) : uni.courses;
   const remaining = uni.courses.length - visibleCourses.length;
   const live = isLive(uni);
+  // Only the level the student asked for is worth repeating on every card;
+  // with no level chosen, list what the university teaches instead.
+  const levels = form.level ? [form.level] : uni.levels || [];
 
   return (
     <article
@@ -122,10 +126,23 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFa
           </p>
 
           <div className="flex flex-wrap gap-1.5 mt-3">
+            {levels.map((l) => (
+              <span
+                key={l}
+                className="inline-flex items-center gap-1 font-mono text-xs border border-border rounded px-2 py-0.5 text-text-secondary"
+              >
+                <IconGraduationCap width={11} height={11} />
+                {l}
+              </span>
+            ))}
             {uni.intakes.map((m) => (
               <span
                 key={m}
-                className="inline-flex items-center gap-1 font-mono text-xs border border-border rounded px-2 py-0.5 text-text-secondary"
+                className={`inline-flex items-center gap-1 font-mono text-xs border rounded px-2 py-0.5 ${
+                  form.intake === m
+                    ? "border-gold bg-gold/10 text-gold-dark"
+                    : "border-border text-text-secondary"
+                }`}
               >
                 <IconCalendar width={11} height={11} />
                 {m}
@@ -138,7 +155,7 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFa
                 key={c}
                 className="font-mono text-xs bg-background rounded px-2 py-0.5 text-text-secondary"
               >
-                {c}
+                {form.level ? `${form.level} ${c}` : c}
               </span>
             ))}
             {remaining > 0 && (
@@ -370,7 +387,8 @@ export default function ResultsList({
             className="mx-auto mb-3 text-text-muted"
           />
           No matches yet &mdash; try lowering your IELTS requirement, raising
-          your budget, or clearing the course/city filter.
+          your budget, or clearing the name search, course, city, level and
+          intake filters.
         </div>
       )}
 

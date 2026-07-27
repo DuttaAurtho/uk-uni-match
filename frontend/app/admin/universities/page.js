@@ -13,6 +13,7 @@ const EMPTY_FORM = {
   scholarship: "",
   intakes: "",
   courses: "",
+  levels: "BSc, MSc",
   data_status: "Estimated - please verify",
   official_url: "",
 };
@@ -27,6 +28,7 @@ function toFormValues(uni) {
     scholarship: uni.scholarship || "",
     intakes: (uni.intakes || []).join(", "),
     courses: (uni.courses || []).join(", "),
+    levels: (uni.levels || []).join(", "),
     data_status: uni.data_status || "",
     official_url: uni.official_url || "",
   };
@@ -42,6 +44,7 @@ function toPayload(values) {
     scholarship: values.scholarship.trim(),
     intakes: values.intakes.split(",").map((s) => s.trim()).filter(Boolean),
     courses: values.courses.split(",").map((s) => s.trim()).filter(Boolean),
+    levels: values.levels.split(",").map((s) => s.trim()).filter(Boolean),
     data_status: values.data_status.trim(),
     official_url: values.official_url.trim(),
   };
@@ -151,6 +154,17 @@ function UniversityForm({ initial, onSubmit, onCancel, submitLabel }) {
             value={values.courses}
             onChange={(e) => set("courses", e.target.value)}
             placeholder="Computer Science, Business & Management"
+            className="focus-gold w-full text-sm border border-border rounded-md px-3 py-2 bg-white"
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label className="block text-xs font-medium text-text-secondary mb-1">
+            Degree levels (comma-separated) — drives the BSc/MSc search filter
+          </label>
+          <input
+            value={values.levels}
+            onChange={(e) => set("levels", e.target.value)}
+            placeholder="BSc, MSc"
             className="focus-gold w-full text-sm border border-border rounded-md px-3 py-2 bg-white"
           />
         </div>

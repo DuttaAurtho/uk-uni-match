@@ -21,6 +21,9 @@ const EMPTY_FORM = {
   budget: "",
   course: "",
   city: "",
+  q: "",
+  level: "",
+  intake: "",
 };
 
 export default function Home() {
@@ -32,6 +35,9 @@ export default function Home() {
   const [status, setStatus] = useState("idle"); // idle | loading | success | error
   const [courses, setCourses] = useState([]);
   const [cities, setCities] = useState([]);
+  const [intakes, setIntakes] = useState([]);
+  const [levels, setLevels] = useState([]);
+  const [universityNames, setUniversityNames] = useState([]);
   const [stats, setStats] = useState(null);
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
@@ -76,17 +82,23 @@ export default function Home() {
   useEffect(() => {
     async function loadFilters() {
       try {
-        const [coursesRes, citiesRes, statsRes] = await Promise.all([
-          fetch(`${API_URL}/courses`),
-          fetch(`${API_URL}/cities`),
-          fetch(`${API_URL}/stats`),
-        ]);
-        const coursesData = await coursesRes.json();
-        const citiesData = await citiesRes.json();
-        const statsData = await statsRes.json();
-        setCourses(coursesData.courses || []);
-        setCities(citiesData.cities || []);
-        setStats(statsData);
+        const [courses, cities, intakes, levels, names, stats] =
+          await Promise.all(
+            [
+              "/courses",
+              "/cities",
+              "/intakes",
+              "/levels",
+              "/university-names",
+              "/stats",
+            ].map((path) => fetch(`${API_URL}${path}`).then((r) => r.json()))
+          );
+        setCourses(courses.courses || []);
+        setCities(cities.cities || []);
+        setIntakes(intakes.intakes || []);
+        setLevels(levels.levels || []);
+        setUniversityNames(names.names || []);
+        setStats(stats);
       } catch (err) {
         // Non-fatal — filters just won't be populated
         console.error("Failed to load filter options", err);
@@ -108,6 +120,9 @@ export default function Home() {
     if (activeForm.budget) params.set("budget", activeForm.budget);
     if (activeForm.course) params.set("course", activeForm.course);
     if (activeForm.city) params.set("city", activeForm.city);
+    if (activeForm.q) params.set("q", activeForm.q.trim());
+    if (activeForm.level) params.set("level", activeForm.level);
+    if (activeForm.intake) params.set("intake", activeForm.intake);
 
     try {
       const res = await fetch(`${API_URL}/universities?${params.toString()}`);
@@ -126,8 +141,26 @@ export default function Home() {
     runSearch(form);
   }
 
+  function handleHeroSearch(overrideQuery) {
+    // Picking a suggestion passes its name through directly — `form` here is
+    // this render's snapshot, so it still holds whatever was typed before.
+    runSearch(
+      typeof overrideQuery === "string" ? { ...form, q: overrideQuery } : form
+    );
+    // The hero fills the viewport, so a search from up there has to take the
+    // user down to what it found.
+    document.getElementById("results")?.scrollIntoView({ behavior: "smooth" });
+  }
+
   function handleReset() {
-    setForm((prev) => ({ ...prev, course: "", city: "" }));
+    setForm((prev) => ({
+      ...prev,
+      course: "",
+      city: "",
+      q: "",
+      level: "",
+      intake: "",
+    }));
   }
 
   function scrollToForm() {
@@ -140,7 +173,14 @@ export default function Home() {
     <>
       <Header />
       <main className="flex-1">
-        <Hero stats={stats} onStart={scrollToForm} />
+        <Hero
+          stats={stats}
+          onStart={scrollToForm}
+          q={form.q}
+          onQChange={(v) => handleChange("q", v)}
+          onSearch={handleHeroSearch}
+          universityNames={universityNames}
+        />
         <HowItWorks />
 
         <section className="mx-auto max-w-5xl px-6 pb-20 grid gap-8 lg:grid-cols-[340px_1fr]">
@@ -151,9 +191,11 @@ export default function Home() {
             onReset={handleReset}
             courses={courses}
             cities={cities}
+            intakes={intakes}
+            levels={levels}
             status={status}
           />
-          <div>
+          <div id="results" className="scroll-mt-24">
             <ResultsList
               status={status}
               results={results}
@@ -172,6 +214,7 @@ export default function Home() {
         key={selectedUniversity ? selectedUniversity.id : "none"}
         university={selectedUniversity}
         course={form.course}
+        level={form.level}
         onClose={() => setSelectedUniversity(null)}
         onAskAi={() => setChatOpen(true)}
       />

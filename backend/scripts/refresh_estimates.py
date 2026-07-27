@@ -32,7 +32,7 @@ import gemini_client  # noqa: E402
 
 log = logging.getLogger("refresh_estimates")
 
-_JSON_COLUMNS = ("intakes", "courses")
+_JSON_COLUMNS = ("intakes", "courses", "levels")
 
 
 def _decode(rows):

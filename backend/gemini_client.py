@@ -243,6 +243,21 @@ def _generate(prompt, system_instruction, temperature=0.3):
     return llm_provider.generate(prompt, system_instruction, temperature)
 
 
+# Tuition and entry requirements differ sharply between undergraduate and
+# postgraduate study, so the level the student picked is spelled out for the
+# model rather than passed as a bare "BSc" it might read as a course code.
+_LEVEL_PHRASES = {
+    "bsc": "BSc/BA undergraduate (bachelor's)",
+    "msc": "MSc/MA postgraduate taught (master's)",
+}
+
+
+def _level_phrase(level):
+    if not level:
+        return ""
+    return _LEVEL_PHRASES.get(level.strip().lower(), level)
+
+
 SEARCH_SYNTHESIS_SYSTEM_INSTRUCTION = (
     "You are a UK higher-education admissions research assistant for "
     "prospective international students, particularly from Bangladesh. "
@@ -254,13 +269,13 @@ SEARCH_SYNTHESIS_SYSTEM_INSTRUCTION = (
 )
 
 
-def search_universities(gpa, ielts, budget, course, city, candidates):
+def search_universities(gpa, ielts, budget, course, city, candidates, intake=None, level=None):
     """`candidates` is a pre-filtered list of real universities (from our
     own static dataset, matched against the same criteria) to enrich with
     live search data. Sourcing names this way — instead of asking Gemini to
     invent a candidate list — saves a whole Gemini call per search, which
     matters a lot given this API key's very small daily request quota."""
-    cache_key = ("search", gpa, ielts, budget, course, city)
+    cache_key = ("search", gpa, ielts, budget, course, city, intake, level)
     cached = _cache_get(cache_key)
     if cached is not None:
         return cached
@@ -269,8 +284,10 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
         f"HSC/GPA of {gpa} (out of 5.0)" if gpa is not None else None,
         f"IELTS overall band of {ielts}" if ielts is not None else None,
         f"a maximum annual tuition budget of £{budget}" if budget is not None else None,
+        f"looking for a {_level_phrase(level)} degree" if level else None,
         f"interested in studying {course}" if course else None,
         f"preferring the city/region of {city}" if city else None,
+        f"aiming for the {intake} intake" if intake else None,
     ]
     criteria_text = "; ".join(c for c in criteria if c)
 
@@ -282,7 +299,10 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
 
     def _enrich(c):
         name, city_name = c["name"], c.get("city", "")
-        query = f"{name} {city_name} international tuition fees IELTS entry requirements {course or ''}".strip()
+        query = (
+            f"{name} {city_name} {level or ''} international tuition fees "
+            f"IELTS entry requirements {course or ''}"
+        ).strip()
         results = _web_search(query, max_results=4)
         # A URL we already trust (persisted from a prior run, or a curated
         # admin edit) is worth reading directly — its actual page text beats
@@ -322,6 +342,12 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
         for e in enriched
     )
 
+    level_note = (
+        f", at {_level_phrase(level)} level — the figures and requirements must "
+        f"be for that level, not the other one"
+        if level
+        else ""
+    )
     synthesis_prompt = f"""Student profile: {criteria_text or "no specific constraints given"}.
 
 Using the real evidence below for each university — official page content where given, else the
@@ -329,7 +355,7 @@ web search results — return a JSON array where each item has exactly these key
 - "name": string
 - "city": string
 - "annual_tuition_gbp": number, estimated annual tuition in GBP for an
-  international student in the relevant course
+  international student in the relevant course{level_note}
 - "min_gpa": number or null, typical minimum HSC/GPA equivalent out of 5.0
   if determinable, else null
 - "min_ielts": number, typical minimum IELTS overall band required
@@ -378,6 +404,10 @@ Only return the JSON array, nothing else."""
                 "scholarship": item.get("scholarship", ""),
                 "intakes": item.get("intakes", []) or [],
                 "courses": item.get("courses", []) or [],
+                # Which levels a university teaches is curated data, not
+                # something to let the model overwrite — take it from the
+                # candidate row we asked about.
+                "levels": enrich_info.get("baseline", {}).get("levels", []),
                 "why_it_matches": item.get("why_it_matches", ""),
                 "official_url": official_url,
                 "data_status": "Live data via Gemini + web search — verify before applying",
@@ -397,22 +427,32 @@ DETAILS_SYSTEM_INSTRUCTION = (
 )
 
 
-def get_university_details(name, city, course):
-    cache_key = ("details", name, city, course)
+def get_university_details(name, city, course, level=None):
+    cache_key = ("details", name, city, course, level)
     cached = _cache_get(cache_key)
     if cached is not None:
         return cached
 
-    query = f"{name} {city or ''} tuition fees entry requirements scholarships application deadlines visa official site".strip()
+    query = f"{name} {city or ''} {level or ''} tuition fees entry requirements scholarships application deadlines visa official site".strip()
     results = _web_search(query, max_results=6)
     if not results:
         raise ValueError("No search results found for this university")
 
-    course_line = f" for their {course} course" if course else ""
+    course_line = ""
+    if course or level:
+        course_line = " for their " + " ".join(
+            bit for bit in [level or "", course or ""] if bit
+        ) + (" course" if course else " courses")
+    level_line = (
+        f"\nThe student is asking about {_level_phrase(level)} study — quote "
+        f"tuition, entry requirements and deadlines for that level.\n"
+        if level
+        else ""
+    )
     prompt = f"""Using the real web search results below about "{name}" in
 {city or 'the UK'}, write a detailed profile for a prospective
 international student{course_line}.
-
+{level_line}
 Search results:
 {_format_search_context(results)}
 
@@ -469,12 +509,15 @@ def chat_reply(message, history, context):
     if profile:
         context_lines.append(
             "Student profile — GPA: {gpa}, IELTS: {ielts}, budget: £{budget}/yr, "
-            "course interest: {course}, preferred city: {city}.".format(
+            "course interest: {course}, preferred city: {city}, degree level: "
+            "{level}, target intake: {intake}.".format(
                 gpa=profile.get("gpa") or "not given",
                 ielts=profile.get("ielts") or "not given",
                 budget=profile.get("budget") or "not given",
                 course=profile.get("course") or "not given",
                 city=profile.get("city") or "not given",
+                level=_level_phrase(profile.get("level")) or "not given",
+                intake=profile.get("intake") or "not given",
             )
         )
     university = (context or {}).get("university")

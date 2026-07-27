@@ -20,7 +20,7 @@ const SECTIONS = [
   ["visa_notes", "Visa (CAS) notes"],
 ];
 
-export default function UniversityDetailModal({ university, course, onClose, onAskAi }) {
+export default function UniversityDetailModal({ university, course, level, onClose, onAskAi }) {
   const [details, setDetails] = useState(null);
   const [status, setStatus] = useState("loading"); // loading | success | error
 
@@ -35,6 +35,7 @@ export default function UniversityDetailModal({ university, course, onClose, onA
         name: university.name,
         city: university.city,
         course: course || null,
+        level: level || null,
       }),
     })
       .then((res) => {
@@ -54,7 +55,7 @@ export default function UniversityDetailModal({ university, course, onClose, onA
     return () => {
       cancelled = true;
     };
-  }, [university, course]);
+  }, [university, course, level]);
 
   useEffect(() => {
     function handleKey(e) {
@@ -84,7 +85,11 @@ export default function UniversityDetailModal({ university, course, onClose, onA
             <h2 className="font-[family-name:var(--font-display)] text-2xl">
               {university.name}
             </h2>
-            <p className="text-sm text-text-secondary mt-0.5">{university.city}</p>
+            <p className="text-sm text-text-secondary mt-0.5">
+              {[university.city, [level, course].filter(Boolean).join(" ")]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
           </div>
           <button
             onClick={onClose}

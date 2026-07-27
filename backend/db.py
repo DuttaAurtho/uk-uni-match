@@ -34,7 +34,12 @@ DB_PATH = Path(os.environ.get("DATABASE_PATH", BACKEND_DIR / "universities.db"))
 SEED_FILE = BACKEND_DIR / "universities_data.json"
 
 # Columns holding JSON-encoded lists, decoded on read.
-_JSON_COLUMNS = ("intakes", "courses")
+_JSON_COLUMNS = ("intakes", "courses", "levels")
+
+# Degree levels a university is assumed to teach until an admin says otherwise.
+# Nearly every UK institution runs both, so "both" is the only honest default;
+# the postgraduate-only specialists are corrected by hand in the admin panel.
+DEFAULT_LEVELS = ["BSc", "MSc"]
 
 
 # ---------------------------------------------------------------------------
@@ -176,6 +181,15 @@ MIGRATIONS = [
     # dataset oldest-refreshed-first instead of re-checking everything.
     "ALTER TABLE universities ADD COLUMN official_url TEXT",
     "ALTER TABLE universities ADD COLUMN estimated_last_synced TEXT",
+    # Which degree levels each university teaches, so the BSc/MSc filter has
+    # something real to match on. Existing rows take the default (both).
+    """ALTER TABLE universities ADD COLUMN levels TEXT NOT NULL
+       DEFAULT '["BSc", "MSc"]'""",
+    # The three newer search filters, so a history entry describes the search
+    # that was actually run rather than a subset of it.
+    "ALTER TABLE search_history ADD COLUMN intake TEXT",
+    "ALTER TABLE search_history ADD COLUMN level TEXT",
+    "ALTER TABLE search_history ADD COLUMN name_query TEXT",
 ]
 
 
@@ -325,8 +339,11 @@ def seed_from_json(conn: Optional[sqlite3.Connection] = None) -> int:
                 """
                 INSERT INTO universities
                     (name, city, min_gpa, min_ielts, annual_tuition_gbp,
-                     scholarship, intakes, courses, data_status)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     scholarship, intakes, courses, levels, data_status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                -- `levels` is deliberately absent below: the seed file carries
+                -- no per-university level data, so re-seeding must not undo an
+                -- admin's correction (e.g. marking an institution MSc-only).
                 ON CONFLICT(name) DO UPDATE SET
                     city               = excluded.city,
                     min_gpa            = excluded.min_gpa,
@@ -346,6 +363,7 @@ def seed_from_json(conn: Optional[sqlite3.Connection] = None) -> int:
                     uni.get("scholarship", ""),
                     json.dumps(uni.get("intakes", [])),
                     json.dumps(uni.get("courses", [])),
+                    json.dumps(uni.get("levels") or DEFAULT_LEVELS),
                     uni.get("data_status", "Estimated - please verify"),
                 ),
             )
@@ -380,7 +398,7 @@ def load_universities(conn: Optional[sqlite3.Connection] = None) -> List[Dict[st
 # intentionally excluded — those are only ever set by scripts/sync_discover_uni.py.
 _EDITABLE_UNIVERSITY_FIELDS = (
     "name", "city", "min_gpa", "min_ielts", "annual_tuition_gbp",
-    "scholarship", "intakes", "courses", "data_status", "official_url",
+    "scholarship", "intakes", "courses", "levels", "data_status", "official_url",
 )
 
 

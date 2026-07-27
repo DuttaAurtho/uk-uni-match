@@ -117,6 +117,22 @@ REGION_ALIASES = {
     "n. ireland": "northern ireland",
 }
 
+# The degree levels the UI offers. Kept short on purpose: BSc/MSc stand in for
+# undergraduate/postgraduate taught degrees generally (a BA is filtered the
+# same way as a BSc), which is the distinction that actually moves tuition and
+# entry requirements for the students this tool is aimed at.
+DEGREE_LEVELS = [
+    {"value": "BSc", "label": "BSc — Undergraduate", "description": "Bachelor's (BSc/BA)"},
+    {"value": "MSc", "label": "MSc — Postgraduate", "description": "Master's (MSc/MA)"},
+]
+
+# Calendar order for intake months, so the dropdown reads Jan→Dec instead of
+# alphabetically (which would put January after... nothing sensible).
+_MONTH_ORDER = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+]
+
 
 def _region_match(search_city: str, uni_city: str) -> Optional[bool]:
     """True/False if `search_city` is a nation name, else None (not a region)."""
@@ -130,9 +146,32 @@ def _region_match(search_city: str, uni_city: str) -> Optional[bool]:
     return uni_city in cities or region in uni_city
 
 
-def _filter_universities(gpa, ielts, budget, course, city):
+def _name_match(query: str, name: str) -> bool:
+    """Loose name search: every word the student typed has to appear in the
+    name, in any order. So "manchester met" and "met manchester" both find
+    Manchester Metropolitan University, while "manchester oxford" finds
+    neither."""
+    words = query.lower().split()
+    haystack = name.lower()
+    return all(word in haystack for word in words)
+
+
+def _filter_universities(gpa, ielts, budget, course, city, intake=None, level=None, name_query=None):
     results = []
     for uni in UNIVERSITIES:
+        if name_query and not _name_match(name_query, uni["name"]):
+            continue
+        if intake is not None:
+            wanted = intake.strip().lower()
+            if not any(wanted == m.strip().lower() for m in uni.get("intakes", [])):
+                continue
+        if level is not None:
+            # An empty `levels` list means nobody has recorded them for this
+            # university, so it stays in the results rather than silently
+            # disappearing from every level-filtered search.
+            uni_levels = [l.strip().lower() for l in uni.get("levels", [])]
+            if uni_levels and level.strip().lower() not in uni_levels:
+                continue
         if gpa is not None and uni["min_gpa"] is not None and gpa < uni["min_gpa"]:
             continue
         if ielts is not None and ielts < uni["min_ielts"]:
@@ -192,6 +231,7 @@ def _as_result(uni: dict) -> dict:
         "scholarship": uni.get("scholarship", ""),
         "intakes": uni.get("intakes", []),
         "courses": uni.get("courses", []),
+        "levels": uni.get("levels", []),
         "why_it_matches": "",
         "official_url": uni.get("official_url") or "",
         "data_status": uni.get("data_status", "Estimated - please verify"),
@@ -272,14 +312,18 @@ def root():
     return {"status": "ok", "message": "UK University Comparison Tool API is running"}
 
 
-def _log_history_if_logged_in(user, gpa, ielts, budget, course, city, result_count):
+def _log_history_if_logged_in(user, gpa, ielts, budget, course, city, result_count,
+                              intake=None, level=None, name_query=None):
     """Best-effort: a logged-in user's search history is a convenience
     feature, not a critical path, so a DB hiccup here must never break the
     actual search response."""
     if not user:
         return
     try:
-        dashboard_db.log_search(user["id"], gpa, ielts, budget, course, city, result_count)
+        dashboard_db.log_search(
+            user["id"], gpa, ielts, budget, course, city, result_count,
+            intake=intake, level=level, name_query=name_query,
+        )
     except Exception:
         logger.exception("Failed to log search history for user %s", user["id"])
 
@@ -291,17 +335,26 @@ def get_universities(
     budget: Optional[float] = Query(None, description="Max annual tuition budget in GBP"),
     course: Optional[str] = Query(None, description="Subject/course keyword, e.g. 'Computer Science'"),
     city: Optional[str] = Query(None, description="Preferred city or region, e.g. 'London'"),
+    intake: Optional[str] = Query(None, description="Intake month, e.g. 'September'"),
+    level: Optional[str] = Query(None, description="Degree level: 'BSc' (undergraduate) or 'MSc' (postgraduate)"),
+    q: Optional[str] = Query(None, description="Free-text university name search, e.g. 'manchester met'"),
     user=Depends(get_current_user_optional),
 ):
-    candidates = _rank(_filter_universities(gpa, ielts, budget, course, city), gpa, ielts)
+    candidates = _rank(
+        _filter_universities(gpa, ielts, budget, course, city, intake, level, q), gpa, ielts
+    )
+    log_args = (gpa, ielts, budget, course, city)
+    log_kwargs = {"intake": intake, "level": level, "name_query": q}
     if not candidates:
-        _log_history_if_logged_in(user, gpa, ielts, budget, course, city, 0)
+        _log_history_if_logged_in(user, *log_args, 0, **log_kwargs)
         return {"count": 0, "results": [], "source": "none", "enriched_count": 0}
 
     top, rest = candidates[:ENRICH_LIMIT], candidates[ENRICH_LIMIT:]
 
     try:
-        enriched = gemini_client.search_universities(gpa, ielts, budget, course, city, top)
+        enriched = gemini_client.search_universities(
+            gpa, ielts, budget, course, city, top, intake=intake, level=level
+        )
         # The enrichment path builds its own dicts from the model response, so
         # it doesn't carry the official statistics. Re-attach them from the
         # matching DB row — otherwise the top results (the ones a student
@@ -310,7 +363,7 @@ def get_universities(
     except Exception:
         logger.exception("search_universities failed, serving estimated data only")
         results = [_as_result(u) for u in candidates]
-        _log_history_if_logged_in(user, gpa, ielts, budget, course, city, len(results))
+        _log_history_if_logged_in(user, *log_args, len(results), **log_kwargs)
         return {
             "count": len(results),
             "results": results,
@@ -324,7 +377,7 @@ def get_universities(
     remainder = [u for u in top if u["name"].strip().lower() not in enriched_names] + rest
 
     results = enriched + [_as_result(u) for u in remainder]
-    _log_history_if_logged_in(user, gpa, ielts, budget, course, city, len(results))
+    _log_history_if_logged_in(user, *log_args, len(results), **log_kwargs)
     return {
         "count": len(results),
         "results": results,
@@ -337,12 +390,15 @@ class UniversityDetailsRequest(BaseModel):
     name: str
     city: Optional[str] = None
     course: Optional[str] = None
+    level: Optional[str] = None
 
 
 @app.post("/universities/details")
 def university_details(payload: UniversityDetailsRequest):
     try:
-        data = gemini_client.get_university_details(payload.name, payload.city, payload.course)
+        data = gemini_client.get_university_details(
+            payload.name, payload.city, payload.course, payload.level
+        )
         if not data.get("official_url"):
             fallback_uni = _find_in_fallback_dataset(payload.name)
             if fallback_uni and fallback_uni.get("official_url"):
@@ -385,6 +441,27 @@ def get_all_courses():
     for uni in UNIVERSITIES:
         all_courses.update(uni.get("courses", []))
     return {"courses": sorted(all_courses)}
+
+
+@app.get("/university-names")
+def get_all_university_names():
+    """Just the names, for the search box's autocomplete list — the full
+    /universities payload would be wasteful for a datalist."""
+    return {"names": sorted(uni["name"] for uni in UNIVERSITIES)}
+
+
+@app.get("/intakes")
+def get_all_intakes():
+    present = {i for uni in UNIVERSITIES for i in uni.get("intakes", [])}
+    known = [m for m in _MONTH_ORDER if m in present]
+    # Anything that isn't a plain month name (an admin could type "Autumn")
+    # still belongs in the list, just after the months we can order.
+    return {"intakes": known + sorted(present - set(known))}
+
+
+@app.get("/levels")
+def get_all_levels():
+    return {"levels": DEGREE_LEVELS}
 
 
 @app.get("/cities")

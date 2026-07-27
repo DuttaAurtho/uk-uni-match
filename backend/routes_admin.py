@@ -31,6 +31,7 @@ class UniversityUpsert(BaseModel):
     scholarship: Optional[str] = ""
     intakes: List[str] = []
     courses: List[str] = []
+    levels: List[str] = db.DEFAULT_LEVELS
     data_status: Optional[str] = "Estimated - please verify"
     official_url: Optional[str] = ""
 
@@ -44,6 +45,7 @@ class UniversityPatch(BaseModel):
     scholarship: Optional[str] = None
     intakes: Optional[List[str]] = None
     courses: Optional[List[str]] = None
+    levels: Optional[List[str]] = None
     data_status: Optional[str] = None
     official_url: Optional[str] = None
 
