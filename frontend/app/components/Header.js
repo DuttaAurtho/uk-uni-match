@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { IconChevronDown } from "./icons";
 import Logo from "./Logo";
@@ -10,10 +10,17 @@ import { avatarUrl } from "../lib/api";
 
 export default function Header() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, loading, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const onHomePage = pathname === "/";
 
-  function scrollTo(id) {
+  /** The header sits on every page, but its targets only exist on the home
+   *  page — so these are real links, and the smooth scroll is only an
+   *  optimisation for when we're already there. */
+  function scrollInsteadOfNavigating(e, id) {
+    if (!onHomePage) return;
+    e.preventDefault();
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   }
 
@@ -26,26 +33,30 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-surface border-b border-border shadow-sm">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
-        <button
-          onClick={() => scrollTo("top")}
+        <Link
+          href="/"
+          aria-label="UK Uni Match — home"
+          onClick={(e) => scrollInsteadOfNavigating(e, "top")}
           className="flex items-center text-text-primary group"
         >
           <Logo size={34} className="group-hover:opacity-80 transition-opacity" />
-        </button>
+        </Link>
 
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-text-secondary">
-          <button
-            onClick={() => scrollTo("how-it-works")}
+          <Link
+            href="/#how-it-works"
+            onClick={(e) => scrollInsteadOfNavigating(e, "how-it-works")}
             className="hover:text-navy-light transition-colors"
           >
             How it works
-          </button>
-          <button
-            onClick={() => scrollTo("match-form")}
+          </Link>
+          <Link
+            href="/#match-form"
+            onClick={(e) => scrollInsteadOfNavigating(e, "match-form")}
             className="hover:text-navy-light transition-colors"
           >
             Universities
-          </button>
+          </Link>
         </nav>
 
         {loading ? (
