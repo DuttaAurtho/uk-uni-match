@@ -7,7 +7,6 @@ import Hero from "./components/Hero";
 import HowItWorks from "./components/HowItWorks";
 import MatchForm from "./components/MatchForm";
 import ResultsList from "./components/ResultsList";
-import UniversityDetailModal from "./components/UniversityDetailModal";
 import ChatWidget from "./components/ChatWidget";
 import Footer from "./components/Footer";
 import { useAuth } from "./lib/AuthContext";
@@ -39,7 +38,6 @@ export default function Home() {
   const [levels, setLevels] = useState([]);
   const [universityNames, setUniversityNames] = useState([]);
   const [stats, setStats] = useState(null);
-  const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [chatOpen, setChatOpen] = useState(false);
   const [favoriteIds, setFavoriteIds] = useState(new Set());
 
@@ -141,6 +139,17 @@ export default function Home() {
     runSearch(form);
   }
 
+  // The profile travels to the university page in the URL, so its fit panel
+  // can compare these numbers against that university's requirements.
+  function openUniversity(uni) {
+    const params = new URLSearchParams();
+    for (const key of ["gpa", "ielts", "budget", "course", "level", "intake"]) {
+      if (form[key]) params.set(key, form[key]);
+    }
+    const query = params.toString();
+    router.push(`/university/${uni.id}${query ? `?${query}` : ""}`);
+  }
+
   function handleHeroSearch(overrideQuery) {
     // Picking a suggestion passes its name through directly — `form` here is
     // this render's snapshot, so it still holds whatever was typed before.
@@ -202,7 +211,7 @@ export default function Home() {
               form={form}
               source={source}
               onRetry={() => runSearch(form)}
-              onSelectUniversity={setSelectedUniversity}
+              onSelectUniversity={openUniversity}
               favoriteIds={favoriteIds}
               onToggleFavorite={handleToggleFavorite}
             />
@@ -212,19 +221,10 @@ export default function Home() {
         <HowItWorks />
       </main>
 
-      <UniversityDetailModal
-        key={selectedUniversity ? selectedUniversity.id : "none"}
-        university={selectedUniversity}
-        course={form.course}
-        level={form.level}
-        onClose={() => setSelectedUniversity(null)}
-        onAskAi={() => setChatOpen(true)}
-      />
       <ChatWidget
         open={chatOpen}
         onOpenChange={setChatOpen}
         profile={form}
-        university={selectedUniversity}
       />
 
       <Footer />

@@ -4,7 +4,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Query
+from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -384,6 +384,17 @@ def get_universities(
         "source": "gemini",
         "enriched_count": len(enriched),
     }
+
+
+@app.get("/universities/{uni_id}")
+def get_university(uni_id: int):
+    """One university, for its own page. The live/AI-written prose still
+    comes from POST /universities/details — this is the stored record the
+    page can render immediately, before that lookup returns."""
+    for uni in UNIVERSITIES:
+        if uni["id"] == uni_id:
+            return {"university": _as_result(uni)}
+    raise HTTPException(status_code=404, detail="University not found")
 
 
 class UniversityDetailsRequest(BaseModel):
