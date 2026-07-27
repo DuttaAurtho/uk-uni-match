@@ -12,9 +12,11 @@ project and isn't available here. Callers (main.py) are expected to catch
 exceptions from these functions and fall back to the static dataset.
 """
 
+import html
 import json
 import re
 import time
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 from ddgs import DDGS
@@ -52,6 +54,40 @@ def _web_search(query, max_results=5):
         return DDGS().text(query, max_results=max_results) or []
     except Exception:
         return []
+
+
+_PAGE_FETCH_TIMEOUT_SECONDS = 10
+_PAGE_FETCH_MAX_CHARS = 10000
+
+
+def _fetch_page_text(url):
+    """Best-effort plain text of a page we already know is this university's
+    official site — search snippets are short excerpts of whatever page
+    happened to rank, which is often a generic fees overview rather than the
+    specific course page, so a known-good URL is worth reading directly.
+    Never raises: many sites block simple requests or need JS to render, and
+    an empty string here just means the caller falls back to search alone."""
+    if not url:
+        return ""
+    try:
+        request = urllib.request.Request(
+            url, headers={"User-Agent": "Mozilla/5.0 (compatible; UKUniMatchBot/1.0)"}
+        )
+        with urllib.request.urlopen(request, timeout=_PAGE_FETCH_TIMEOUT_SECONDS) as response:
+            charset = response.headers.get_content_charset() or "utf-8"
+            raw = response.read(500_000).decode(charset, errors="ignore")
+    except Exception:
+        return ""
+
+    # Site chrome (nav/header/footer) is often thousands of characters of
+    # menu links before the actual page content starts — strip it first so
+    # the character budget below is spent on content, not "Skip to main
+    # content / Staff login / Student login / Study Study COURSES...".
+    text = re.sub(r"(?is)<(script|style|nav|header|footer)[^>]*>.*?</\1>", " ", raw)
+    text = re.sub(r"(?s)<[^>]+>", " ", text)
+    text = html.unescape(text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text[:_PAGE_FETCH_MAX_CHARS]
 
 
 def _format_search_context(results):
@@ -248,13 +284,21 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
         name, city_name = c["name"], c.get("city", "")
         query = f"{name} {city_name} international tuition fees IELTS entry requirements {course or ''}".strip()
         results = _web_search(query, max_results=4)
+        # A URL we already trust (persisted from a prior run, or a curated
+        # admin edit) is worth reading directly — its actual page text beats
+        # a short search snippet of whichever page happened to rank, which
+        # is often a generic fees overview rather than this course's page.
+        known_url = c.get("official_url") or ""
+        page_text = _fetch_page_text(known_url)
         return {
             "name": name,
             "city": city_name,
             "baseline": c,
-            "ac_uk_url": _ac_uk_url(results, name),
+            "ac_uk_url": _ac_uk_url(results, name) or (known_url or None),
             "best_guess_url": _best_guess_url(results),
             "search_context": _format_search_context(results),
+            "known_url": known_url,
+            "page_text": page_text,
         }
 
     with ThreadPoolExecutor(max_workers=min(10, len(named_candidates))) as pool:
@@ -266,16 +310,22 @@ def search_universities(gpa, ielts, budget, course, city, candidates):
     candidates_block = "\n\n".join(
         f"University: {e['name']} ({e['city']})\n"
         f"Our existing estimate (may be outdated — verify/update using the "
-        f"search results below): tuition £{e['baseline'].get('annual_tuition_gbp')}, "
+        f"evidence below): tuition £{e['baseline'].get('annual_tuition_gbp')}, "
         f"min GPA {e['baseline'].get('min_gpa')}, min IELTS {e['baseline'].get('min_ielts')}\n"
-        f"Search results:\n{e['search_context']}"
+        + (
+            f"Official page content ({e['known_url']}) — this is the university's own site, "
+            f"prefer it over the search results below whenever it states a figure:\n{e['page_text']}\n\n"
+            if e["page_text"]
+            else ""
+        )
+        + f"Search results:\n{e['search_context']}"
         for e in enriched
     )
 
     synthesis_prompt = f"""Student profile: {criteria_text or "no specific constraints given"}.
 
-Using the real web search results below for each university, return a JSON
-array where each item has exactly these keys:
+Using the real evidence below for each university — official page content where given, else the
+web search results — return a JSON array where each item has exactly these keys:
 - "name": string
 - "city": string
 - "annual_tuition_gbp": number, estimated annual tuition in GBP for an

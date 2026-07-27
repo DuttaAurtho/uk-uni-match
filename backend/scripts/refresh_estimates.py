@@ -4,6 +4,7 @@ Gemini, a batch at a time, oldest-refreshed-first.
     python scripts/refresh_estimates.py                  # next 20, oldest first
     python scripts/refresh_estimates.py --batch-size 40
     python scripts/refresh_estimates.py --dry-run
+    python scripts/refresh_estimates.py --name "University of East London"
 
 Free (DuckDuckGo search has no API key; Gemini's free tier is what's
 rate-limited — see .env.example). The whole point of batching every
@@ -34,13 +35,7 @@ log = logging.getLogger("refresh_estimates")
 _JSON_COLUMNS = ("intakes", "courses")
 
 
-def _next_batch(conn, limit):
-    """The `limit` universities least recently refreshed by this script (or
-    never refreshed at all, which sort first)."""
-    rows = conn.execute(
-        "SELECT * FROM universities ORDER BY COALESCE(estimated_last_synced, '') ASC LIMIT ?",
-        (limit,),
-    ).fetchall()
+def _decode(rows):
     batch = []
     for row in rows:
         uni = dict(row)
@@ -50,10 +45,32 @@ def _next_batch(conn, limit):
     return batch
 
 
+def _next_batch(conn, limit):
+    """The `limit` universities least recently refreshed by this script (or
+    never refreshed at all, which sort first)."""
+    rows = conn.execute(
+        "SELECT * FROM universities ORDER BY COALESCE(estimated_last_synced, '') ASC LIMIT ?",
+        (limit,),
+    ).fetchall()
+    return _decode(rows)
+
+
+def _named_batch(conn, names):
+    rows = conn.execute(
+        f"SELECT * FROM universities WHERE name IN ({','.join('?' for _ in names)})",
+        names,
+    ).fetchall()
+    return _decode(rows)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--batch-size", type=int, default=20, help="Universities to refresh this run")
     parser.add_argument("--dry-run", action="store_true", help="Log what would change without writing")
+    parser.add_argument(
+        "--name", action="append", dest="names",
+        help="Refresh this exact university name instead of the oldest-synced batch. Repeatable.",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO, format="  %(levelname)-7s %(message)s")
@@ -61,9 +78,9 @@ def main() -> int:
     try:
         conn = db.connect()
         try:
-            batch = _next_batch(conn, args.batch_size)
+            batch = _named_batch(conn, args.names) if args.names else _next_batch(conn, args.batch_size)
             if not batch:
-                log.info("No universities in the database to refresh.")
+                log.info("No matching universities to refresh.")
                 return 0
 
             log.info("Refreshing %d universities (oldest-synced first)...", len(batch))
