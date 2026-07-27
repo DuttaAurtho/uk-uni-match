@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { IconGraduationCap, IconChevronDown } from "./icons";
+import { IconChevronDown } from "./icons";
+import Logo from "./Logo";
 import { useAuth } from "../lib/AuthContext";
 import { avatarUrl } from "../lib/api";
 
@@ -27,14 +28,9 @@ export default function Header() {
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         <button
           onClick={() => scrollTo("top")}
-          className="flex items-center gap-2.5 text-text-primary group"
+          className="flex items-center text-text-primary group"
         >
-          <span className="grid place-items-center w-8 h-8 rounded-md bg-navy text-white group-hover:bg-navy-light transition-colors">
-            <IconGraduationCap width={17} height={17} />
-          </span>
-          <span className="text-lg font-bold tracking-tight">
-            UK Uni Match
-          </span>
+          <Logo size={34} className="group-hover:opacity-80 transition-opacity" />
         </button>
 
         <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-text-secondary">

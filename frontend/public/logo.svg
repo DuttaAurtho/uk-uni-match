@@ -1,0 +1,27 @@
+<svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .wordmark { font-family: Georgia, 'Times New Roman', serif; font-weight: 700; }
+      .tagline { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: 3px; }
+    </style>
+  </defs>
+
+  <!-- Icon: mortarboard with tassel forming a checkmark ("matched") -->
+  <g>
+    <!-- mortarboard top -->
+    <polygon points="80,26 150,61 80,96 10,61" fill="#163A5F"/>
+    <!-- cap base -->
+    <path d="M 52,68 L 108,68 L 100,96 L 60,96 Z" fill="#0F2A45"/>
+    <!-- center button -->
+    <circle cx="80" cy="61" r="5.5" fill="#E8772E"/>
+    <!-- tassel string curving into a checkmark -->
+    <path d="M 80,61 C 96,82 104,100 106,120" fill="none" stroke="#E8772E" stroke-width="6" stroke-linecap="round"/>
+    <path d="M 94,122 L 105,134 L 126,104" fill="none" stroke="#E8772E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="190" y="98" class="wordmark" font-size="54" fill="#163A5F">UK Uni Match</text>
+
+  <!-- Tagline -->
+  <text x="192" y="130" class="tagline" font-size="15" fill="#8A93A0">FIND YOUR BEST-FIT UNIVERSITY</text>
+</svg>

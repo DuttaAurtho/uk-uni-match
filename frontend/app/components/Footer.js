@@ -1,17 +1,10 @@
-import { IconGraduationCap } from "./icons";
+import Logo from "./Logo";
 
 export default function Footer() {
   return (
     <footer className="border-t border-border bg-surface mt-12">
       <div className="mx-auto max-w-6xl px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-text-primary">
-          <span className="grid place-items-center w-7 h-7 rounded-lg bg-navy/5 text-navy-light">
-            <IconGraduationCap width={14} height={14} />
-          </span>
-          <span className="font-[family-name:var(--font-display)]">
-            UK Uni Match
-          </span>
-        </div>
+        <Logo size={38} tagline className="text-text-primary" />
         <p className="text-xs text-text-muted text-center sm:text-right max-w-md">
           Tuition, entry requirements, and scholarship info are estimates for
           planning purposes &mdash; always verify final figures on each
