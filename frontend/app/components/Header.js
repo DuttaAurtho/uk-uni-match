@@ -23,30 +23,30 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-navy/90 backdrop-blur-md border-b border-white/10">
+    <header className="sticky top-0 z-50 bg-surface border-b border-border shadow-sm">
       <div className="mx-auto max-w-6xl px-6 h-16 flex items-center justify-between">
         <button
           onClick={() => scrollTo("top")}
-          className="flex items-center gap-2.5 text-white group"
+          className="flex items-center gap-2.5 text-text-primary group"
         >
-          <span className="grid place-items-center w-8 h-8 rounded-lg bg-gold/15 border border-gold/30 text-gold group-hover:bg-gold/25 transition-colors">
+          <span className="grid place-items-center w-8 h-8 rounded-md bg-navy text-white group-hover:bg-navy-light transition-colors">
             <IconGraduationCap width={17} height={17} />
           </span>
-          <span className="font-[family-name:var(--font-display)] text-lg tracking-wide">
+          <span className="text-lg font-bold tracking-tight">
             UK Uni Match
           </span>
         </button>
 
-        <nav className="hidden sm:flex items-center gap-8 text-sm text-white/70">
+        <nav className="hidden sm:flex items-center gap-8 text-sm font-medium text-text-secondary">
           <button
             onClick={() => scrollTo("how-it-works")}
-            className="hover:text-white transition-colors"
+            className="hover:text-navy-light transition-colors"
           >
             How it works
           </button>
           <button
             onClick={() => scrollTo("match-form")}
-            className="hover:text-white transition-colors"
+            className="hover:text-navy-light transition-colors"
           >
             Universities
           </button>
@@ -58,12 +58,12 @@ export default function Header() {
           <div className="relative">
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-text-secondary hover:text-navy-light transition-colors"
             >
               <img
                 src={avatarUrl(user.avatar_seed)}
                 alt=""
-                className="w-8 h-8 rounded-full bg-white/10 border border-white/20"
+                className="w-8 h-8 rounded-full bg-background border border-border"
               />
               <IconChevronDown width={14} height={14} />
             </button>
@@ -94,13 +94,13 @@ export default function Header() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="hidden sm:block text-sm text-white/70 hover:text-white transition-colors"
+              className="hidden sm:block text-sm font-medium text-navy-light hover:underline transition-colors"
             >
               Log in
             </Link>
             <Link
               href="/signup"
-              className="text-sm font-semibold bg-gold hover:bg-gold-light text-navy px-4 py-2 rounded-md transition-colors"
+              className="text-sm font-semibold bg-gold hover:bg-gold-light text-white px-4 py-2 rounded-md transition-colors"
             >
               Sign up
             </Link>

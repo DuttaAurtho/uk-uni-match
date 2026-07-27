@@ -37,13 +37,13 @@ function SliderField({
           htmlFor={id}
           className="flex items-center gap-1.5 text-sm font-medium"
         >
-          <Icon width={15} height={15} className="text-gold-dark" />
+          <Icon width={15} height={15} className="text-navy-light" />
           {label}
           {hint && (
             <span className="text-text-secondary font-normal">{hint}</span>
           )}
         </label>
-        <div className="flex items-center gap-1 font-mono text-sm bg-background border border-border rounded-md px-2 py-0.5">
+        <div className="flex items-center gap-1 font-mono text-sm bg-background border border-border rounded px-2 py-0.5">
           <input
             id={id}
             type="number"
@@ -83,6 +83,17 @@ function SliderField({
   );
 }
 
+/** Section heading in the filter rail — small, bold, uppercase-ish, the way
+ *  portal sidebars label each block of controls. */
+function FilterHeading({ icon: Icon, children }) {
+  return (
+    <h3 className="flex items-center gap-1.5 text-sm font-bold text-text-primary">
+      {Icon && <Icon width={14} height={14} className="text-navy-light" />}
+      {children}
+    </h3>
+  );
+}
+
 export default function MatchForm({
   form,
   onChange,
@@ -96,47 +107,68 @@ export default function MatchForm({
 }) {
   const cityListId = useId();
   const levelLabelId = useId();
-  const hasActiveFilters = useMemo(
-    () => Boolean(form.q || form.course || form.city || form.intake || form.level),
-    [form.q, form.course, form.city, form.intake, form.level]
+  const activeChips = useMemo(
+    () =>
+      [
+        form.q && { key: "q", label: form.q },
+        form.level && { key: "level", label: form.level },
+        form.course && { key: "course", label: form.course },
+        form.city && { key: "city", label: form.city },
+        form.intake && { key: "intake", label: `${form.intake} intake` },
+      ].filter(Boolean),
+    [form.q, form.level, form.course, form.city, form.intake]
   );
+  const hasActiveFilters = activeChips.length > 0;
 
   return (
     <form
       id="match-form"
       onSubmit={onSubmit}
-      className="h-fit lg:sticky lg:top-24 bg-surface border border-border rounded-xl shadow-md overflow-hidden animate-fade-in-up scroll-mt-24"
+      className="h-fit lg:sticky lg:top-20 bg-surface border border-border rounded-md overflow-hidden scroll-mt-24"
     >
-      <div className="h-1 bg-gradient-to-r from-gold via-gold-light to-gold" />
-      <div className="p-6 space-y-6">
+      <div className="p-5 space-y-5">
+        {/* "Selected filters" panel: every active filter as a removable
+            chip, with one Clear all — the portal's sidebar convention. */}
         <div>
-          <h2 className="font-[family-name:var(--font-display)] text-xl">
-            Your profile
-          </h2>
-          <p className="text-sm text-text-secondary mt-0.5">
-            Drag the sliders or type exact numbers.
-          </p>
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-base font-bold text-text-primary">
+              {hasActiveFilters ? "Selected filters" : "Filters"}
+            </h2>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={onReset}
+                className="link-blue text-xs"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          {hasActiveFilters ? (
+            <div className="flex flex-wrap gap-1.5 mt-2.5">
+              {activeChips.map((chip) => (
+                <button
+                  key={chip.key}
+                  type="button"
+                  onClick={() => onChange(chip.key, "")}
+                  title={`Remove ${chip.label}`}
+                  className="inline-flex items-center gap-1.5 max-w-full rounded-full border border-navy-light/40 bg-navy-light/5 pl-3 pr-2 py-1 text-xs text-navy hover:bg-navy-light/10 transition-colors"
+                >
+                  <span className="truncate">{chip.label}</span>
+                  <IconClose width={11} height={11} className="shrink-0" />
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-text-secondary mt-1">
+              Set your numbers below to narrow the list.
+            </p>
+          )}
         </div>
 
-        {/* The name search itself lives in the hero; down here it only needs
-            to show what's active and offer a way out of it. */}
-        {form.q && (
-          <div>
-            <span className="flex items-center gap-1.5 text-sm font-medium mb-1.5">
-              <IconSearch width={15} height={15} className="text-gold-dark" />
-              Searching for
-            </span>
-            <button
-              type="button"
-              onClick={() => onChange("q", "")}
-              title="Clear the name search"
-              className="inline-flex items-center gap-2 max-w-full rounded-full border border-gold bg-gold/10 pl-3 pr-2 py-1 text-sm text-navy hover:bg-gold/20 transition-colors"
-            >
-              <span className="truncate">{form.q}</span>
-              <IconClose width={13} height={13} className="shrink-0" />
-            </button>
-          </div>
-        )}
+        <div className="h-px bg-border" />
+
+        <FilterHeading icon={IconSearch}>Your profile</FilterHeading>
 
         <SliderField
           icon={IconTarget}
@@ -177,6 +209,8 @@ export default function MatchForm({
 
         <div className="h-px bg-border" />
 
+        <FilterHeading icon={IconBook}>Programme</FilterHeading>
+
         <div>
           <span
             id={levelLabelId}
@@ -185,7 +219,7 @@ export default function MatchForm({
             <IconGraduationCap
               width={15}
               height={15}
-              className="text-gold-dark"
+              className="text-navy-light"
             />
             Degree level{" "}
             <span className="text-text-secondary font-normal">(optional)</span>
@@ -205,9 +239,9 @@ export default function MatchForm({
                   aria-checked={active}
                   title={opt.description || "Any degree level"}
                   onClick={() => onChange("level", opt.value)}
-                  className={`rounded-md border px-2 py-2 text-sm font-medium transition-colors ${
+                  className={`rounded border px-2 py-1.5 text-sm font-medium transition-colors ${
                     active
-                      ? "border-gold bg-gold/10 text-navy"
+                      ? "border-navy-light bg-navy-light/10 text-navy"
                       : "border-border bg-white text-text-secondary hover:bg-background"
                   }`}
                 >
@@ -228,7 +262,7 @@ export default function MatchForm({
             className="flex items-center gap-1.5 text-sm font-medium mb-1.5"
             htmlFor="course"
           >
-            <IconBook width={15} height={15} className="text-gold-dark" />
+            <IconBook width={15} height={15} className="text-navy-light" />
             Course / subject{" "}
             <span className="text-text-secondary font-normal">(optional)</span>
           </label>
@@ -237,7 +271,7 @@ export default function MatchForm({
             name="course"
             value={form.course}
             onChange={(e) => onChange("course", e.target.value)}
-            className="focus-gold w-full rounded-md border border-border px-3 py-2.5 text-sm bg-white transition-shadow"
+            className="focus-gold w-full rounded border border-border px-3 py-2 text-sm bg-white transition-shadow"
           >
             {/* Subjects read as "BSc Computer Science" once a level is
                 picked, so the two fields visibly describe one degree. */}
@@ -257,7 +291,7 @@ export default function MatchForm({
             className="flex items-center gap-1.5 text-sm font-medium mb-1.5"
             htmlFor="city"
           >
-            <IconPin width={15} height={15} className="text-gold-dark" />
+            <IconPin width={15} height={15} className="text-navy-light" />
             City / region{" "}
             <span className="text-text-secondary font-normal">(optional)</span>
           </label>
@@ -270,7 +304,7 @@ export default function MatchForm({
             value={form.city}
             onChange={(e) => onChange("city", e.target.value)}
             placeholder="Start typing… e.g. London, Wales"
-            className="focus-gold w-full rounded-md border border-border px-3 py-2.5 text-sm bg-white transition-shadow"
+            className="focus-gold w-full rounded border border-border px-3 py-2 text-sm bg-white transition-shadow"
           />
           <datalist id={cityListId}>
             {cities.map((c) => (
@@ -284,7 +318,7 @@ export default function MatchForm({
             className="flex items-center gap-1.5 text-sm font-medium mb-1.5"
             htmlFor="intake"
           >
-            <IconCalendar width={15} height={15} className="text-gold-dark" />
+            <IconCalendar width={15} height={15} className="text-navy-light" />
             Intake{" "}
             <span className="text-text-secondary font-normal">(optional)</span>
           </label>
@@ -293,7 +327,7 @@ export default function MatchForm({
             name="intake"
             value={form.intake}
             onChange={(e) => onChange("intake", e.target.value)}
-            className="focus-gold w-full rounded-md border border-border px-3 py-2.5 text-sm bg-white transition-shadow"
+            className="focus-gold w-full rounded border border-border px-3 py-2 text-sm bg-white transition-shadow"
           >
             <option value="">Any intake</option>
             {intakes.map((m) => (
@@ -308,7 +342,7 @@ export default function MatchForm({
           <button
             type="submit"
             disabled={status === "loading"}
-            className="flex-1 inline-flex items-center justify-center gap-2 bg-navy hover:bg-navy-light active:scale-[0.98] transition-all text-white font-semibold py-2.5 rounded-md disabled:opacity-60 disabled:active:scale-100"
+            className="flex-1 inline-flex items-center justify-center gap-2 bg-navy hover:bg-navy-light transition-colors text-white font-semibold py-2.5 rounded disabled:opacity-60"
           >
             {status === "loading" ? (
               <>
@@ -323,7 +357,7 @@ export default function MatchForm({
             <button
               type="button"
               onClick={onReset}
-              className="px-4 rounded-md border border-border text-sm text-text-secondary hover:bg-background hover:text-text-primary transition-colors"
+              className="px-4 rounded border border-border text-sm text-text-secondary hover:bg-background hover:text-text-primary transition-colors"
             >
               Clear
             </button>

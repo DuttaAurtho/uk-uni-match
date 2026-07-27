@@ -44,7 +44,7 @@ const SORT_OPTIONS = [
 
 function SkeletonCard() {
   return (
-    <div className="bg-surface border border-border rounded-xl p-5 space-y-3">
+    <div className="bg-surface border border-border rounded-md p-5 space-y-3">
       <div className="skeleton h-5 w-2/3 rounded" />
       <div className="skeleton h-3 w-1/3 rounded" />
       <div className="skeleton h-5 w-40 rounded" />
@@ -61,6 +61,43 @@ function isLive(uni) {
   return typeof uni.data_status === "string" && uni.data_status.startsWith("Live data");
 }
 
+/** Initials standing in for the university crest the portals show. */
+function CrestBadge({ name }) {
+  const initials = name
+    .replace(/\b(University|of|the|College|London|Metropolitan)\b/gi, " ")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0].toUpperCase())
+    .join("");
+  return (
+    <span
+      aria-hidden
+      className="grid place-items-center shrink-0 w-10 h-10 rounded border border-border bg-background text-navy text-xs font-bold"
+    >
+      {initials || name.slice(0, 2).toUpperCase()}
+    </span>
+  );
+}
+
+/** The portal's "4.3 ★ (72)" line. We have no reviews, but Discover Uni's
+ *  official student-satisfaction score is the same idea and is real data. */
+function SatisfactionScore({ official }) {
+  const nss = official?.nss_satisfaction;
+  if (nss == null) return null;
+  const outOfFive = (nss / 20).toFixed(1);
+  return (
+    <span
+      className="inline-flex items-center gap-1 text-xs text-text-secondary"
+      title="Official student satisfaction (Discover Uni / NSS)"
+    >
+      <span className="font-semibold text-text-primary">{outOfFive}</span>
+      <IconStar width={12} height={12} fill="currentColor" className="text-gold" />
+      <span className="text-text-muted">({Math.round(nss)}% satisfied)</span>
+    </span>
+  );
+}
+
 function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFavorited, onToggleFavorite }) {
   const tier = matchTier(uni, form);
   const visibleCourses = compact ? uni.courses.slice(0, 3) : uni.courses;
@@ -70,11 +107,13 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFa
   // with no level chosen, list what the university teaches instead.
   const levels = form.level ? [form.level] : uni.levels || [];
 
+  const blurb = uni.why_it_matches || uni.scholarship;
+
   return (
     <article
       onClick={() => onSelect(uni)}
-      className="animate-pop-in bg-surface border border-border rounded-xl p-5 card-hover cursor-pointer relative"
-      style={{ animationDelay: `${Math.min(index, 8) * 0.05}s` }}
+      className="animate-fade-in bg-surface border border-border rounded-md p-4 sm:p-5 card-hover cursor-pointer relative"
+      style={{ animationDelay: `${Math.min(index, 8) * 0.03}s` }}
     >
       {onToggleFavorite && (
         <button
@@ -91,116 +130,145 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFa
           <IconStar width={18} height={18} fill={isFavorited ? "currentColor" : "none"} />
         </button>
       )}
-      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap pr-6">
-            <h3 className="font-[family-name:var(--font-display)] text-xl">
-              {uni.name}
-            </h3>
-            <span
-              className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${toneClasses[tier.tone]}`}
-            >
-              {tier.label}
-            </span>
-            <span
-              title={
-                live
-                  ? "Figures verified against live web results just now"
-                  : "Estimated figures — open the university for a live lookup"
-              }
-              className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
-                live
-                  ? "text-success bg-success-bg"
-                  : "text-text-muted bg-background border border-border"
-              }`}
-            >
-              {live && (
-                <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              )}
-              {live ? "Live" : "Estimated"}
-            </span>
-          </div>
-          <p className="text-sm text-text-secondary mt-0.5">{uni.city}</p>
-          <p className="text-sm text-success bg-success-bg inline-block px-2 py-0.5 rounded mt-2">
-            {uni.scholarship}
-          </p>
 
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {levels.map((l) => (
-              <span
-                key={l}
-                className="inline-flex items-center gap-1 font-mono text-xs border border-border rounded px-2 py-0.5 text-text-secondary"
-              >
-                <IconGraduationCap width={11} height={11} />
-                {l}
-              </span>
-            ))}
-            {uni.intakes.map((m) => (
-              <span
-                key={m}
-                className={`inline-flex items-center gap-1 font-mono text-xs border rounded px-2 py-0.5 ${
-                  form.intake === m
-                    ? "border-gold bg-gold/10 text-gold-dark"
-                    : "border-border text-text-secondary"
-                }`}
-              >
-                <IconCalendar width={11} height={11} />
-                {m}
-              </span>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {visibleCourses.map((c) => (
-              <span
-                key={c}
-                className="font-mono text-xs bg-background rounded px-2 py-0.5 text-text-secondary"
-              >
-                {form.level ? `${form.level} ${c}` : c}
-              </span>
-            ))}
-            {remaining > 0 && (
-              <span className="font-mono text-xs text-text-muted px-2 py-0.5">
-                +{remaining} more
+      {/* Institution line — crest, name, score, standing — above the title,
+          exactly the hierarchy the portal result cards use. */}
+      <div className="flex items-start gap-3 pr-8">
+        <CrestBadge name={uni.name} />
+        <div className="min-w-0">
+          <p className="text-sm font-semibold text-text-primary truncate">
+            {uni.name}
+          </p>
+          <p className="text-xs text-text-secondary">
+            {uni.city}, United Kingdom
+          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+            <SatisfactionScore official={uni.official} />
+            {uni.official?.employment_pct != null && (
+              <span className="text-xs font-semibold text-text-primary">
+                {Math.round(uni.official.employment_pct)}% in work or study
               </span>
             )}
           </div>
+        </div>
+      </div>
 
-          {expanded && (
-            <div className="text-xs text-text-muted mt-3 border-t border-border pt-3 animate-fade-in space-y-1">
-              {uni.why_it_matches && (
-                <p className="text-text-secondary">{uni.why_it_matches}</p>
-              )}
-              <p>Data status: {uni.data_status}</p>
-            </div>
-          )}
+      <h3 className="mt-3 text-lg font-bold text-navy leading-snug">
+        {form.level || form.course
+          ? [form.level, form.course || "programmes"].filter(Boolean).join(" ")
+          : "Undergraduate & postgraduate programmes"}
+      </h3>
 
+      {blurb && (
+        <p className="card-blurb mt-2 text-sm text-text-secondary line-clamp-2">
+          {blurb}
+        </p>
+      )}
+
+      <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
+        <div className="flex flex-wrap gap-1.5">
+          {levels.map((l) => (
+            <span
+              key={l}
+              className="inline-flex items-center gap-1 text-xs font-semibold border border-border rounded bg-background px-2 py-1 text-text-primary"
+            >
+              <IconGraduationCap width={11} height={11} />
+              {l === "BSc" ? "B.Sc." : l === "MSc" ? "M.Sc." : l}
+            </span>
+          ))}
+          {uni.intakes.map((m) => (
+            <span
+              key={m}
+              className={`inline-flex items-center gap-1 text-xs rounded px-2 py-1 border ${
+                form.intake === m
+                  ? "border-gold bg-gold/10 text-gold-dark font-semibold"
+                  : "border-transparent bg-background text-text-secondary"
+              }`}
+            >
+              <IconCalendar width={11} height={11} />
+              {m}
+            </span>
+          ))}
+        </div>
+
+        <p className="text-right ml-auto">
+          <span className="text-base font-bold text-text-primary">
+            £{uni.annual_tuition_gbp.toLocaleString()}
+          </span>
+          <span className="text-sm text-text-secondary">/yr</span>
+        </p>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`text-[11px] font-semibold px-2 py-0.5 rounded ${toneClasses[tier.tone]}`}
+          >
+            {tier.label}
+          </span>
+          <span
+            title={
+              live
+                ? "Figures verified against live web results just now"
+                : "Estimated figures — open the university for a live lookup"
+            }
+            className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded ${
+              live
+                ? "text-success bg-success-bg"
+                : "text-text-muted bg-background border border-border"
+            }`}
+          >
+            {live && <span className="w-1.5 h-1.5 rounded-full bg-success" />}
+            {live ? "Live data" : "Estimated"}
+          </span>
+          <span className="text-xs text-text-muted">
+            Needs GPA {uni.min_gpa}+ · IELTS {uni.min_ielts}+
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onToggle(uni.id);
             }}
-            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-navy-light hover:text-navy transition-colors"
+            className="inline-flex items-center gap-1 text-xs text-text-secondary hover:text-navy-light transition-colors"
           >
-            {expanded ? "Hide details" : "More details"}
+            {expanded ? "Less" : "More"}
             <IconChevronDown
               width={12}
               height={12}
               className={`transition-transform ${expanded ? "rotate-180" : ""}`}
             />
           </button>
-        </div>
-
-        <div className="text-left sm:text-right shrink-0">
-          <p className="font-mono text-lg">
-            £{uni.annual_tuition_gbp.toLocaleString()}
-          </p>
-          <p className="text-xs text-text-secondary">per year</p>
-          <p className="text-xs text-text-secondary mt-2">
-            Needs GPA {uni.min_gpa}+ · IELTS {uni.min_ielts}+
-          </p>
+          <span className="link-blue text-sm">View University Information</span>
         </div>
       </div>
+
+      {expanded && (
+        <div className="mt-3 pt-3 border-t border-border animate-fade-in text-xs space-y-2">
+          <div className="flex flex-wrap gap-1.5">
+            {visibleCourses.map((c) => (
+              <span
+                key={c}
+                className="text-xs bg-background rounded px-2 py-0.5 text-text-secondary"
+              >
+                {form.level ? `${form.level} ${c}` : c}
+              </span>
+            ))}
+            {remaining > 0 && (
+              <span className="text-xs text-text-muted px-2 py-0.5">
+                +{remaining} more
+              </span>
+            )}
+          </div>
+          {uni.scholarship && (
+            <p className="text-text-secondary">{uni.scholarship}</p>
+          )}
+          <p className="text-text-muted">Data status: {uni.data_status}</p>
+        </div>
+      )}
     </article>
   );
 }
@@ -277,7 +345,7 @@ export default function ResultsList({
 
   if (status === "idle") {
     return (
-      <div className="border border-dashed border-border rounded-xl p-12 text-center text-text-secondary bg-surface/50 animate-fade-in">
+      <div className="border border-dashed border-border rounded-md bg-surface p-12 text-center text-text-secondary bg-surface/50 animate-fade-in">
         <IconInbox
           width={32}
           height={32}
@@ -294,7 +362,7 @@ export default function ResultsList({
 
   if (status === "error") {
     return (
-      <div className="border border-danger/30 rounded-xl p-8 bg-danger-bg text-text-secondary text-center animate-fade-in">
+      <div className="border border-danger/30 rounded-md p-8 bg-danger-bg text-text-secondary text-center animate-fade-in">
         <IconAlert width={28} height={28} className="mx-auto mb-3 text-danger" />
         <p className="text-text-primary font-medium mb-1">
           Couldn&apos;t reach the server
@@ -304,7 +372,7 @@ export default function ResultsList({
         </p>
         <button
           onClick={onRetry}
-          className="mt-4 text-sm font-semibold bg-navy hover:bg-navy-light text-white px-4 py-2 rounded-md transition-colors"
+          className="mt-4 text-sm font-semibold bg-navy hover:bg-navy-light text-white px-4 py-2 rounded transition-colors"
         >
           Try again
         </button>
@@ -329,33 +397,60 @@ export default function ResultsList({
   return (
     <div>
       {source === "fallback" && (
-        <p className="text-xs font-medium text-gold-dark bg-gold/10 inline-block px-2.5 py-1 rounded-full mb-4 animate-fade-in">
+        <p className="text-xs font-medium text-gold-dark bg-gold/10 border border-gold/30 rounded px-3 py-2 mb-4 animate-fade-in">
           Live lookup unavailable right now — showing offline estimated data
         </p>
       )}
 
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <div>
-          <p className="font-[family-name:var(--font-display)] text-2xl">
-            <span className="text-gold-dark">{results.length}</span>{" "}
-            {results.length === 1 ? "university matches" : "universities match"}{" "}
-            your profile
-          </p>
-          {liveCount > 0 && (
-            <p className="text-xs text-text-secondary mt-1">
-              Top {liveCount} verified against live web data · the rest show
-              estimated figures until you open them
-            </p>
+      {/* Breadcrumb + headline count + sort strip: the portal's standard
+          results header, so the page states what it is listing before it
+          lists it. */}
+      <nav aria-label="Breadcrumb" className="text-xs text-text-secondary mb-2">
+        <ol className="flex flex-wrap items-center gap-1.5">
+          {["Home", form.level || "All degrees", form.course || "All subjects", form.city || "United Kingdom"].map(
+            (crumb, i, all) => (
+              <li key={`${crumb}-${i}`} className="flex items-center gap-1.5">
+                <span className={i === all.length - 1 ? "text-text-primary font-medium" : ""}>
+                  {crumb}
+                </span>
+                {i < all.length - 1 && <span className="text-text-muted">›</span>}
+              </li>
+            )
           )}
-        </div>
+        </ol>
+      </nav>
 
-        {results.length > 0 && (
+      <h2 className="text-2xl font-bold text-text-primary leading-snug">
+        {results.length}{" "}
+        {[form.level, form.course].filter(Boolean).join(" ") || "university"}
+        {results.length === 1 ? " match" : " matches"}
+        {form.city ? ` in ${form.city}` : " in the United Kingdom"}
+      </h2>
+      {liveCount > 0 && (
+        <p className="text-xs text-text-secondary mt-1">
+          Top {liveCount} verified against live web data · the rest show
+          estimated figures until you open them
+        </p>
+      )}
+
+      {results.length > 0 && (
+        <div className="mt-3 mb-5 pb-3 border-b border-border flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-text-secondary">
+            Showing{" "}
+            <span className="font-semibold text-text-primary">
+              {Math.min(visibleCount, sortedResults.length)}
+            </span>{" "}
+            of {sortedResults.length}
+          </p>
           <div className="flex items-center gap-2">
+            <label htmlFor="sort" className="text-xs font-semibold text-text-secondary">
+              Sort
+            </label>
             <select
+              id="sort"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="focus-gold text-sm border border-border rounded-md px-2.5 py-1.5 bg-white"
-              aria-label="Sort results"
+              className="focus-gold text-sm border border-border rounded px-2.5 py-1.5 bg-white"
             >
               {SORT_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -367,7 +462,7 @@ export default function ResultsList({
               type="button"
               onClick={() => setCompact((v) => !v)}
               title={compact ? "Show full details" : "Show compact view"}
-              className="grid place-items-center w-9 h-9 rounded-md border border-border bg-white hover:bg-background transition-colors text-text-secondary"
+              className="grid place-items-center w-9 h-9 rounded border border-border bg-white hover:bg-background transition-colors text-text-secondary"
             >
               {compact ? (
                 <IconLayoutList width={16} height={16} />
@@ -376,11 +471,11 @@ export default function ResultsList({
               )}
             </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {results.length === 0 && (
-        <div className="border border-dashed border-border rounded-xl p-12 text-center text-text-secondary bg-surface/50 animate-fade-in">
+        <div className="border border-dashed border-border rounded-md bg-surface p-12 text-center text-text-secondary bg-surface/50 animate-fade-in">
           <IconInbox
             width={32}
             height={32}
@@ -392,7 +487,7 @@ export default function ResultsList({
         </div>
       )}
 
-      <div className={compact ? "grid sm:grid-cols-2 gap-4" : "space-y-4"}>
+      <div className={compact ? "grid sm:grid-cols-2 gap-3" : "space-y-3"}>
         {visibleResults.map((uni, i) => (
           <UniCard
             key={uni.id}
@@ -414,7 +509,7 @@ export default function ResultsList({
           <button
             type="button"
             onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-            className="inline-flex items-center gap-2 border border-border bg-surface hover:bg-background text-sm font-semibold px-5 py-2.5 rounded-md transition-colors"
+            className="inline-flex items-center gap-2 border border-navy-light text-navy-light hover:bg-navy-light hover:text-white text-sm font-semibold px-6 py-2.5 rounded transition-colors"
           >
             Show {Math.min(hiddenCount, PAGE_SIZE)} more
             <span className="text-text-muted font-normal">

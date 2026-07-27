@@ -1,31 +1,39 @@
 @import "tailwindcss";
 
+/* Study-portal styling: a light, information-dense look built on a blue
+   institutional palette with a single warm accent for actions. The token
+   NAMES are unchanged from the previous navy/gold theme so every component
+   keeps working — only the values behind them moved. */
 :root {
-  --background: #F4F5F8;
+  --background: #F3F5F7;
   --surface: #FFFFFF;
-  --navy: #16233F;
-  --navy-light: #24365C;
-  --navy-darker: #0D1526;
-  --gold: #C9A227;
-  --gold-light: #E4C767;
-  --gold-dark: #A9860F;
-  --text-primary: #16233F;
-  --text-secondary: #57617A;
-  --text-muted: #8991A6;
-  --success: #2F7D5C;
-  --success-bg: #E7F2EC;
-  --danger: #B3432B;
-  --danger-bg: #FBEAE5;
-  --border: #E2E5EC;
+  /* "navy" is now the portal blue: headers, headings, primary buttons. */
+  --navy: #123E7C;
+  --navy-light: #1A62C4;
+  --navy-darker: #0B2C5C;
+  /* "gold" is now the warm call-to-action accent (search, sign up). */
+  --gold: #EF5525;
+  --gold-light: #FF6E43;
+  --gold-dark: #C63F16;
+  --text-primary: #1D2733;
+  --text-secondary: #5A6575;
+  --text-muted: #8A94A3;
+  --success: #1F7A4D;
+  --success-bg: #E6F4EC;
+  --danger: #C0392B;
+  --danger-bg: #FBEAE8;
+  --border: #DFE3E8;
 
-  --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", Times, serif;
+  /* Portals set everything in one sans family — the serif display face was
+     the single biggest tell of the old look, so it goes. */
+  --font-display: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --shadow-sm: 0 1px 2px rgba(22, 35, 63, 0.06);
-  --shadow-md: 0 4px 16px rgba(22, 35, 63, 0.08);
-  --shadow-lg: 0 12px 32px rgba(22, 35, 63, 0.14);
-  --shadow-gold: 0 8px 24px rgba(201, 162, 39, 0.25);
+  --shadow-sm: 0 1px 2px rgba(29, 39, 51, 0.06);
+  --shadow-md: 0 2px 8px rgba(29, 39, 51, 0.07);
+  --shadow-lg: 0 8px 24px rgba(29, 39, 51, 0.12);
+  --shadow-gold: 0 6px 18px rgba(239, 85, 37, 0.25);
 }
 
 @theme inline {
@@ -169,7 +177,7 @@ body {
   width: 100%;
   height: 6px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--gold) var(--fill, 50%), var(--border) var(--fill, 50%));
+  background: linear-gradient(90deg, var(--navy-light) var(--fill, 50%), var(--border) var(--fill, 50%));
   outline: none;
   cursor: pointer;
 }
@@ -180,8 +188,8 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--navy);
-  border: 3px solid var(--gold);
+  background: #FFFFFF;
+  border: 4px solid var(--navy-light);
   box-shadow: var(--shadow-sm);
   cursor: grab;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -189,7 +197,7 @@ body {
 
 .range-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
-  box-shadow: var(--shadow-gold);
+  box-shadow: 0 0 0 6px rgba(26, 98, 196, 0.15);
 }
 
 .range-slider::-webkit-slider-thumb:active {
@@ -201,8 +209,8 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: var(--navy);
-  border: 3px solid var(--gold);
+  background: #FFFFFF;
+  border: 4px solid var(--navy-light);
   box-shadow: var(--shadow-sm);
   cursor: grab;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -221,14 +229,15 @@ body {
   text-wrap: balance;
 }
 
+/* Portal listings don't lift or tilt on hover — the card just gains a
+   slightly stronger edge and shadow, keeping long result lists calm. */
 .card-hover {
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
 .card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--gold);
+  box-shadow: var(--shadow-md);
+  border-color: #C3CCD8;
 }
 
 .focus-gold:focus {
@@ -236,6 +245,33 @@ body {
 }
 .focus-gold:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.35);
-  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(26, 98, 196, 0.25);
+  border-color: var(--navy-light);
+}
+
+/* ---------------------------------------------------------------------- */
+/* Portal building blocks                                                  */
+/* ---------------------------------------------------------------------- */
+
+/* The quoted blurb on a result card, marked with a rule down its left edge. */
+.card-blurb {
+  border-left: 3px solid var(--border);
+  padding-left: 0.75rem;
+}
+
+/* Small uppercase label above a fact, as used across the portal detail page. */
+.fact-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.link-blue {
+  color: var(--navy-light);
+  font-weight: 600;
+}
+.link-blue:hover {
+  text-decoration: underline;
 }

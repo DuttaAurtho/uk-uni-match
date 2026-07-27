@@ -93,44 +93,27 @@ export default function Hero({
   return (
     <section
       id="top"
-      className="relative overflow-hidden bg-gradient-to-b from-navy-darker via-navy to-navy-light text-white"
+      className="relative overflow-hidden bg-navy text-white"
     >
       {/* Decorative glows */}
       <div
         aria-hidden
-        className="glow-orb pointer-events-none absolute -top-24 -right-24 w-96 h-96 rounded-full bg-gold/20 blur-3xl"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.10),transparent_60%)]"
       />
-      <div
-        aria-hidden
-        className="glow-orb pointer-events-none absolute top-1/3 -left-32 w-72 h-72 rounded-full bg-navy-light/60 blur-3xl"
-        style={{ animationDelay: "3s" }}
-      />
-      <div aria-hidden className="hero-grid absolute inset-0" />
 
-      <div className="relative mx-auto max-w-5xl px-6 py-20 sm:py-28 text-center flex flex-col items-center">
-        <div
-          className="inline-flex items-center gap-2 font-mono text-xs tracking-[0.2em] text-gold uppercase mb-6 border border-gold/30 bg-gold/10 rounded-full px-3 py-1.5 animate-fade-in-up"
-        >
+      <div className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16 text-center flex flex-col items-center">
+        <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide text-white/80 uppercase mb-4">
           <IconSparkle width={13} height={13} />
           For Bangladeshi students applying to the UK
         </div>
 
-        <h1
-          className="font-[family-name:var(--font-display)] text-4xl sm:text-6xl leading-[1.1] max-w-3xl text-balance animate-fade-in-up"
-          style={{ animationDelay: "0.08s" }}
-        >
-          Find out which UK universities{" "}
-          <span className="text-gold">actually fit</span> your GPA, IELTS,
-          and budget.
+        <h1 className="text-2xl sm:text-4xl font-bold leading-tight max-w-3xl text-balance">
+          Find UK universities that fit your GPA, IELTS and budget
         </h1>
 
-        <p
-          className="mt-6 text-white/70 max-w-xl leading-relaxed text-lg animate-fade-in-up"
-          style={{ animationDelay: "0.16s" }}
-        >
-          No more digging through ten different admissions pages. Enter your
-          numbers once, and see every university you&apos;re realistically
-          eligible for &mdash; instantly.
+        <p className="mt-3 text-white/75 max-w-2xl leading-relaxed text-sm sm:text-base">
+          Search {stats ? `${stats.university_count} universities` : "the full list"} by
+          name, or set your numbers and see everything you&apos;re eligible for.
         </p>
 
         {/* The primary way in: search a university by name straight from the
@@ -140,10 +123,9 @@ export default function Hero({
           ref={searchRef}
           onSubmit={handleSearch}
           role="search"
-          className="relative mt-10 w-full max-w-3xl animate-fade-in-up"
-          style={{ animationDelay: "0.2s" }}
+          className="relative mt-7 w-full max-w-3xl"
         >
-          <div className="flex flex-col sm:flex-row items-stretch gap-2 bg-white rounded-xl p-2 shadow-lg">
+          <div className="flex flex-col sm:flex-row items-stretch gap-2 bg-white rounded-md p-1.5 shadow-md">
             <div className="flex items-center flex-1 min-w-0 gap-2 px-2">
               <IconSearch
                 width={18}
@@ -178,7 +160,7 @@ export default function Hero({
             </div>
             <button
               type="submit"
-              className="inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-light active:scale-[0.98] transition-all text-navy font-semibold px-7 py-2.5 rounded-lg"
+              className="inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold-dark transition-colors text-white font-semibold px-8 py-2.5 rounded"
             >
               <IconSearch width={16} height={16} />
               Search
@@ -220,51 +202,30 @@ export default function Hero({
           )}
         </form>
 
-        <div
-          className="mt-9 flex flex-wrap items-center justify-center gap-4 animate-fade-in-up"
-          style={{ animationDelay: "0.24s" }}
-        >
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
           <button
             onClick={onStart}
-            className="bg-gold hover:bg-gold-light active:scale-[0.98] transition-all text-navy font-semibold px-6 py-3 rounded-lg shadow-gold"
+            className="font-semibold text-white underline underline-offset-4 hover:text-white/80 transition-colors"
           >
-            Find my universities
+            Or match by GPA, IELTS &amp; budget
           </button>
           <button
             onClick={() => scrollTo("how-it-works")}
-            className="text-white/80 hover:text-white border border-white/20 hover:border-white/40 px-6 py-3 rounded-lg transition-colors"
+            className="text-white/70 hover:text-white transition-colors"
           >
             How it works
           </button>
         </div>
-
-        <div
-          className="mt-14 grid grid-cols-3 max-w-lg gap-6 animate-fade-in-up"
-          style={{ animationDelay: "0.32s" }}
-        >
-          <Stat
-            value={stats ? stats.university_count : "—"}
-            label="UK universities"
-          />
-          <Stat
-            value={stats ? stats.city_count : "—"}
-            label="Cities & towns"
-          />
-          <Stat value="Free" label="No signup needed" />
-        </div>
       </div>
 
-      <div className="relative flex justify-center pb-6">
-        <div className="scroll-cue text-white/40">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M12 5v14m0 0-6-6m6 6 6-6"
-              stroke="currentColor"
-              strokeWidth="1.75"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+      {/* A thin stat strip closing the band, in place of the old three big
+          gold numbers — portals state their scale in one quiet line. */}
+      <div className="relative border-t border-white/15">
+        <div className="mx-auto max-w-6xl px-6 py-3 flex flex-wrap justify-center gap-x-8 gap-y-1 text-xs text-white/70">
+          <Stat value={stats ? stats.university_count : "—"} label="UK universities" />
+          <Stat value={stats ? stats.city_count : "—"} label="cities & towns" />
+          <Stat value={stats ? stats.course_count : "—"} label="subject areas" />
+          <Stat value="Free" label="no signup needed" />
         </div>
       </div>
     </section>
@@ -273,13 +234,8 @@ export default function Hero({
 
 function Stat({ value, label }) {
   return (
-    <div>
-      <p className="font-[family-name:var(--font-display)] text-2xl sm:text-3xl text-gold">
-        {value}
-      </p>
-      <p className="text-xs text-white/50 mt-1 uppercase tracking-wide">
-        {label}
-      </p>
-    </div>
+    <p>
+      <span className="font-semibold text-white">{value}</span> {label}
+    </p>
   );
 }

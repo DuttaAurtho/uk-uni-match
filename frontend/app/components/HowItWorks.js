@@ -22,35 +22,34 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="mx-auto max-w-5xl px-6 py-16 sm:py-20">
-      <div className="text-center max-w-xl mx-auto mb-12">
-        <p className="font-mono text-xs tracking-[0.2em] text-gold-dark uppercase mb-3">
-          Simple by design
+    <section id="how-it-works" className="border-t border-border bg-surface">
+      <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="max-w-xl mb-8">
+        <h2 className="text-xl font-bold text-text-primary">How it works</h2>
+        <p className="text-sm text-text-secondary mt-1">
+          Three steps, no signup required.
         </p>
-        <h2 className="font-[family-name:var(--font-display)] text-3xl sm:text-4xl">
-          How it works
-        </h2>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-6">
+      <div className="grid sm:grid-cols-3 gap-4">
         {STEPS.map((step, i) => (
           <div
             key={step.title}
-            className="relative bg-surface border border-border rounded-xl p-6 card-hover animate-fade-in-up"
-            style={{ animationDelay: `${i * 0.1}s` }}
-          >
-            <span className="absolute top-5 right-5 font-[family-name:var(--font-display)] text-3xl text-border select-none">
+            className="relative bg-background border border-border rounded-md p-5"
+            >
+            <span className="absolute top-4 right-5 text-2xl font-bold text-border select-none">
               {i + 1}
             </span>
-            <div className="grid place-items-center w-11 h-11 rounded-lg bg-navy/5 text-navy-light mb-4">
+            <div className="grid place-items-center w-10 h-10 rounded bg-navy/5 text-navy-light mb-3">
               <step.icon width={20} height={20} />
             </div>
-            <h3 className="font-semibold text-lg">{step.title}</h3>
+            <h3 className="font-bold text-base">{step.title}</h3>
             <p className="text-sm text-text-secondary mt-1.5 leading-relaxed">
               {step.body}
             </p>
           </div>
         ))}
+      </div>
       </div>
     </section>
   );

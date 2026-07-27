@@ -181,9 +181,9 @@ export default function Home() {
           onSearch={handleHeroSearch}
           universityNames={universityNames}
         />
-        <HowItWorks />
-
-        <section className="mx-auto max-w-5xl px-6 pb-20 grid gap-8 lg:grid-cols-[340px_1fr]">
+        {/* Results lead, explainer follows: on a portal the listing is the
+            page, not something you scroll past marketing to reach. */}
+        <section className="mx-auto max-w-6xl px-6 py-8 grid gap-6 lg:grid-cols-[300px_1fr]">
           <MatchForm
             form={form}
             onChange={handleChange}
@@ -208,6 +208,8 @@ export default function Home() {
             />
           </div>
         </section>
+
+        <HowItWorks />
       </main>
 
       <UniversityDetailModal
