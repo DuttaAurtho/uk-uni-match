@@ -203,6 +203,35 @@ def _hash_code(code: str) -> str:
     return hashlib.sha256(code.encode("utf-8")).hexdigest()
 
 
+def discard_latest_otp(
+    user_id: int, purpose: str, conn: Optional[sqlite3.Connection] = None
+) -> None:
+    """Drop the most recent code for this user/purpose.
+
+    Called when the email carrying it failed to send. The resend cooldown is
+    measured from when a code row was created, so without this a failed
+    delivery would still block the next attempt — telling the user "we
+    already sent you a code" when nothing ever reached them."""
+    own = conn is None
+    conn = conn or db.connect()
+    try:
+        conn.execute(
+            """
+            DELETE FROM otp_codes
+            WHERE id = (
+                SELECT id FROM otp_codes
+                WHERE user_id = ? AND purpose = ?
+                ORDER BY id DESC LIMIT 1
+            )
+            """,
+            (user_id, purpose),
+        )
+        conn.commit()
+    finally:
+        if own:
+            conn.close()
+
+
 def seconds_until_resend_allowed(
     user_id: int, purpose: str, conn: Optional[sqlite3.Connection] = None
 ) -> int:

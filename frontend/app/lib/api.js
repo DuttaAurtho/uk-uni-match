@@ -25,9 +25,19 @@ export async function apiFetch(path, options = {}) {
 
   if (!res.ok) {
     const detail = data?.detail;
-    const message = Array.isArray(detail)
-      ? detail.map((d) => d.msg).join(", ")
-      : detail || `Request failed (${res.status})`;
+    let message;
+    if (Array.isArray(detail)) {
+      // FastAPI validation errors arrive as a list of {loc, msg, type}.
+      message = detail.map((d) => d.msg).join(", ");
+    } else if (detail && typeof detail === "object") {
+      // Some routes return a structured detail so the caller can branch on it
+      // (see /auth/login's needs_verification). Rendering the object itself
+      // would crash React, so the human-readable part is pulled out here and
+      // the whole object stays available on error.detail.
+      message = detail.message || `Request failed (${res.status})`;
+    } else {
+      message = detail || `Request failed (${res.status})`;
+    }
     throw new ApiError(message, res.status, detail);
   }
 

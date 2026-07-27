@@ -48,15 +48,41 @@ def signup(payload: SignupRequest):
     if len(payload.password) < 8:
         raise HTTPException(status_code=400, detail="Password must be at least 8 characters")
 
-    if auth.get_user_by_email(email):
+    existing = auth.get_user_by_email(email)
+    if existing and existing["is_verified"]:
         raise HTTPException(status_code=409, detail="An account with this email already exists")
 
-    user_id = auth.create_user(email, payload.password)
+    if existing:
+        # An account row exists but was never verified — which is a dead end
+        # the user cannot escape on their own: signing up again used to say
+        # "already exists", and logging in says "verify your email first".
+        # It happens whenever the first verification email failed to send,
+        # since the row is created before the send is attempted.
+        #
+        # So an unverified row is treated as an unfinished signup, not a
+        # conflict: adopt the password just entered and send a fresh code.
+        # Overwriting is safe precisely because the account was never
+        # verified — nobody has proven they own this address, and no data can
+        # be attached to it. Whoever controls the inbox still has to enter the
+        # emailed code before the account grants access to anything.
+        user_id = existing["id"]
+        auth.set_user_password(user_id, payload.password)
+        # Don't re-send within the cooldown: the earlier code is still valid,
+        # and signup should not be usable to flood someone's inbox.
+        if auth.seconds_until_resend_allowed(user_id, "verify_email") > 0:
+            return {
+                "message": "We already sent you a code — check your email (and your spam folder).",
+                "email": email,
+            }
+    else:
+        user_id = auth.create_user(email, payload.password)
+
     code = auth.create_otp(user_id, "verify_email")
     try:
         email_client.send_otp_email(email, code, "verify_email")
     except Exception:
         logger.exception("Failed to send verification email to %s", email)
+        auth.discard_latest_otp(user_id, "verify_email")
         raise HTTPException(
             status_code=503, detail="Account created, but the verification email failed to send. Try resending it."
         )
@@ -107,6 +133,7 @@ def resend_otp(payload: ResendOtpRequest):
         email_client.send_otp_email(user["email"], code, payload.purpose)
     except Exception:
         logger.exception("Failed to resend %s email to %s", payload.purpose, user["email"])
+        auth.discard_latest_otp(user["id"], payload.purpose)
         raise HTTPException(status_code=503, detail="Couldn't send the email right now — please try again shortly")
     return {"message": "A new code has been sent."}
 
@@ -122,7 +149,25 @@ def login(payload: LoginRequest, response: Response):
     if not user or not auth.verify_password(payload.password, user["password_hash"]):
         raise HTTPException(status_code=401, detail="Invalid email or password")
     if not user["is_verified"]:
-        raise HTTPException(status_code=403, detail="Please verify your email before logging in")
+        # 403 alone left the user stuck on the login form. Send a fresh code
+        # (subject to the same cooldown) and flag it so the frontend can take
+        # them straight to the verification screen.
+        if auth.seconds_until_resend_allowed(user["id"], "verify_email") == 0:
+            try:
+                email_client.send_otp_email(
+                    user["email"], auth.create_otp(user["id"], "verify_email"), "verify_email"
+                )
+            except Exception:
+                logger.exception("Failed to send verification email to %s", user["email"])
+                auth.discard_latest_otp(user["id"], "verify_email")
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "message": "Please verify your email — we've sent you a code.",
+                "needs_verification": True,
+                "email": user["email"],
+            },
+        )
 
     _set_session_cookie(response, user["id"], user["role"])
     return {"user": _public_user(user)}
@@ -154,6 +199,7 @@ def forgot_password(payload: ForgotPasswordRequest):
                 email_client.send_otp_email(user["email"], code, "reset_password")
             except Exception:
                 logger.exception("Failed to send password reset email to %s", user["email"])
+                auth.discard_latest_otp(user["id"], "reset_password")
     # Same response whether or not the account exists, so this can't be used
     # to discover registered emails.
     return {"message": "If an account exists for this email, a reset code has been sent."}
