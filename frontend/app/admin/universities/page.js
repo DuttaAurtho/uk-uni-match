@@ -198,6 +198,156 @@ function UniversityForm({ initial, onSubmit, onCancel, submitLabel }) {
   );
 }
 
+/** Read a university's own page and pull figures out of it.
+ *
+ *  Two steps by design. The server tries to fetch the URL itself; when the
+ *  site blocks scripts or builds its fees table in JavaScript — both common —
+ *  it says so and asks for the page text, which the admin's own browser can
+ *  always supply. Whatever it finds is shown with the sentence it came from
+ *  and saved only on confirmation, because an unlabelled figure on a fees
+ *  page is as likely to be a home fee as an international one.
+ */
+function ImportPanel({ uni, onImported, onClose }) {
+  const [url, setUrl] = useState(uni.official_url || "");
+  const [pageText, setPageText] = useState("");
+  const [result, setResult] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  async function run(apply) {
+    setBusy(true);
+    setError("");
+    try {
+      const data = await api.post(
+        `/admin/universities/${uni.id}/import-official`,
+        { url: url.trim(), page_text: pageText.trim() || null, apply }
+      );
+      setResult(data);
+      if (data.applied) onImported(data.universities);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const proposal = result?.proposal || {};
+  const needsPaste = result && !result.ok && result.source !== "pasted";
+
+  return (
+    <div className="bg-background border border-border rounded-lg p-4 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-sm font-bold text-text-primary">
+          Import figures from {uni.name}&apos;s own page
+        </p>
+        <button onClick={onClose} className="text-xs link-blue">
+          Close
+        </button>
+      </div>
+
+      <div>
+        <label className="block text-xs font-medium text-text-secondary mb-1">
+          Page URL — the international fees or entry-requirements page
+        </label>
+        <input
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://www.example.ac.uk/international/fees"
+          className="focus-gold w-full text-sm border border-border rounded-md px-3 py-2 bg-white"
+        />
+        <p className="text-[11px] text-text-muted mt-1">
+          A course page often works better than a central fees page — that&apos;s
+          usually where the actual number lives.
+        </p>
+      </div>
+
+      {(needsPaste || pageText) && (
+        <div>
+          <label className="block text-xs font-medium text-text-secondary mb-1">
+            Page text — open the URL, select all, paste here
+          </label>
+          <textarea
+            value={pageText}
+            onChange={(e) => setPageText(e.target.value)}
+            rows={5}
+            placeholder="Paste the page content…"
+            className="focus-gold w-full text-sm border border-border rounded-md px-3 py-2 bg-white font-mono"
+          />
+        </div>
+      )}
+
+      {error && (
+        <p className="text-sm text-danger bg-danger-bg rounded-md px-3 py-2">{error}</p>
+      )}
+
+      {result && !result.ok && (
+        <p className="text-sm text-gold-dark bg-gold/10 border border-gold/30 rounded-md px-3 py-2">
+          {result.reason}
+        </p>
+      )}
+
+      {result?.ok && (
+        <div className="bg-surface border border-border rounded-md p-3 space-y-2">
+          <p className="text-xs font-semibold text-text-secondary">
+            Found on the page ({result.source}, {result.chars} chars)
+            {!result.confident && (
+              <span className="ml-2 text-gold-dark">
+                — no sentence said &quot;international&quot;, so check these are not home fees
+              </span>
+            )}
+          </p>
+          {proposal.tuition_min_gbp != null && (
+            <p className="text-sm">
+              <span className="font-bold">
+                £{proposal.tuition_min_gbp.toLocaleString()}–£
+                {proposal.tuition_max_gbp.toLocaleString()}
+              </span>{" "}
+              <span className="text-text-secondary">per year</span>
+            </p>
+          )}
+          {proposal.min_ielts != null && (
+            <p className="text-sm">
+              IELTS <span className="font-bold">{proposal.min_ielts}</span>
+            </p>
+          )}
+          {Object.entries(result.field_sources || {})
+            .filter(([f]) => f === "annual_tuition_gbp" || f === "min_ielts")
+            .map(([field, src]) => (
+              <blockquote
+                key={field}
+                className="card-blurb text-xs text-text-secondary italic"
+              >
+                “{src.quote}”
+              </blockquote>
+            ))}
+          {result.applied && (
+            <p className="text-sm font-semibold text-success">Saved with its source.</p>
+          )}
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <button
+          onClick={() => run(false)}
+          disabled={busy || !url.trim()}
+          className="text-sm font-semibold border border-border bg-white hover:bg-background px-4 py-2 rounded-md transition-colors disabled:opacity-50"
+        >
+          {busy ? "Reading…" : "Read page"}
+        </button>
+        {result?.ok && !result.applied && (
+          <button
+            onClick={() => run(true)}
+            disabled={busy}
+            className="text-sm font-semibold bg-gold hover:bg-gold-dark text-white px-4 py-2 rounded-md transition-colors disabled:opacity-50"
+          >
+            Save these figures
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 const PAGE_SIZE = 40;
 
 export default function AdminUniversitiesPage() {
@@ -207,6 +357,7 @@ export default function AdminUniversitiesPage() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [creating, setCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [importingId, setImportingId] = useState(null);
 
   useEffect(() => {
     api
@@ -301,10 +452,8 @@ export default function AdminUniversitiesPage() {
               submitLabel="Save"
             />
           ) : (
-            <div
-              key={uni.id}
-              className="flex items-center gap-3 bg-surface border border-border rounded-lg px-4 py-3"
-            >
+            <div key={uni.id} className="space-y-2">
+              <div className="flex items-center gap-3 bg-surface border border-border rounded-lg px-4 py-3">
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-text-primary truncate">
                   {uni.name}
@@ -322,14 +471,33 @@ export default function AdminUniversitiesPage() {
                   )}
                 </p>
                 <p className="text-xs text-text-muted">
-                  {uni.city} · £{uni.annual_tuition_gbp?.toLocaleString()}/yr · GPA {uni.min_gpa}+ ·
-                  IELTS {uni.min_ielts}+
+                  {uni.city} ·{" "}
+                  {uni.tuition_min_gbp && uni.tuition_max_gbp
+                    ? `£${uni.tuition_min_gbp.toLocaleString()}–£${uni.tuition_max_gbp.toLocaleString()}`
+                    : `£${uni.annual_tuition_gbp?.toLocaleString()}`}
+                  /yr · GPA {uni.min_gpa}+ · IELTS {uni.min_ielts}+
+                  {Object.keys(uni.field_sources || {}).length > 0 ? (
+                    <span className="ml-1.5 text-success font-medium">· sourced</span>
+                  ) : (
+                    <span className="ml-1.5">· estimate</span>
+                  )}
                 </p>
               </div>
               <button
                 onClick={() => {
+                  setImportingId(importingId === uni.id ? null : uni.id);
+                  setEditingId(null);
+                }}
+                title="Import figures from the university's own page"
+                className="shrink-0 text-xs font-semibold text-navy-light hover:underline"
+              >
+                Import
+              </button>
+              <button
+                onClick={() => {
                   setEditingId(uni.id);
                   setCreating(false);
+                  setImportingId(null);
                 }}
                 aria-label="Edit"
                 className="shrink-0 text-text-muted hover:text-navy transition-colors"
@@ -343,6 +511,14 @@ export default function AdminUniversitiesPage() {
               >
                 <IconTrash width={16} height={16} />
               </button>
+              </div>
+              {importingId === uni.id && (
+                <ImportPanel
+                  uni={uni}
+                  onImported={setUniversities}
+                  onClose={() => setImportingId(null)}
+                />
+              )}
             </div>
           )
         )}

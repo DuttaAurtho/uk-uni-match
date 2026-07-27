@@ -61,7 +61,7 @@ _PAGE_FETCH_TIMEOUT_SECONDS = 10
 _PAGE_FETCH_MAX_CHARS = 10000
 
 
-def _fetch_page_text(url):
+def _fetch_page_text(url, max_chars=None):
     """Best-effort plain text of a page we already know is this university's
     official site — search snippets are short excerpts of whatever page
     happened to rank, which is often a generic fees overview rather than the
@@ -88,7 +88,9 @@ def _fetch_page_text(url):
     text = re.sub(r"(?s)<[^>]+>", " ", text)
     text = html.unescape(text)
     text = re.sub(r"\s+", " ", text).strip()
-    return text[:_PAGE_FETCH_MAX_CHARS]
+    # The default budget suits prompt context; official_import asks for more,
+    # because a fees table can sit well down a long page.
+    return text[: max_chars or _PAGE_FETCH_MAX_CHARS]
 
 
 def _format_search_context(results):

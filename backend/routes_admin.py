@@ -12,6 +12,7 @@ from pydantic import BaseModel
 import auth
 import dashboard_db
 import db
+import official_import
 from deps import require_admin
 
 router = APIRouter(prefix="/admin", tags=["admin"], dependencies=[Depends(require_admin)])
@@ -76,6 +77,43 @@ def update_university(uni_id: int, payload: UniversityPatch):
         raise HTTPException(status_code=404, detail="University not found")
     db.refresh()
     return {"universities": db.load_universities()}
+
+
+class OfficialImportRequest(BaseModel):
+    url: str
+    # Filled in by the admin when the server can't read the page itself —
+    # their browser has already run the JavaScript and isn't being blocked.
+    page_text: Optional[str] = None
+    # False returns the proposal for review; True writes it. Two steps on
+    # purpose: an unlabelled figure on a fees page is as likely to be a home
+    # fee as an international one, and that call needs a human.
+    apply: bool = False
+
+
+@router.post("/universities/{uni_id}/import-official")
+def import_from_official_page(uni_id: int, payload: OfficialImportRequest):
+    """Read a university's own page and propose (or save) figures from it,
+    each carrying the sentence it came from."""
+    row = next((u for u in db.load_universities() if u["id"] == uni_id), None)
+    if not row:
+        raise HTTPException(status_code=404, detail="University not found")
+
+    result = official_import.analyse(payload.url.strip(), payload.page_text)
+    if not payload.apply or not result.get("ok"):
+        return {"applied": False, **result}
+
+    fields = dict(result["proposal"])
+    # Merge rather than replace: a figure sourced from another page earlier
+    # keeps its citation unless this page supersedes that same field.
+    fields["field_sources"] = {
+        **(row.get("field_sources") or {}),
+        **result["field_sources"],
+    }
+    fields["official_url"] = row.get("official_url") or payload.url.strip()
+    fields["data_status"] = "Verified against the university's own page"
+    db.update_university(uni_id, fields)
+    db.refresh()
+    return {"applied": True, **result, "universities": db.load_universities()}
 
 
 @router.delete("/universities/{uni_id}")
