@@ -5,8 +5,11 @@ provider for this project — see .env.example. Raises on failure like
 gemini_client does; the caller (routes_auth.py) decides the fallback.
 """
 
+import json
 import os
 import smtplib
+import urllib.error
+import urllib.request
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
@@ -45,6 +48,77 @@ def _smtp_config():
         raise RuntimeError("SMTP_HOST, SMTP_USER and SMTP_PASSWORD must all be set")
     port = int(os.environ.get("SMTP_PORT", "587"))
     return host, port, user, password
+
+
+# A blocked SMTP port doesn't refuse the connection, it swallows it — without
+# a timeout the signup request hangs until the platform kills it.
+SMTP_TIMEOUT_SECONDS = 20
+
+
+def describe_backend() -> dict:
+    """Which way mail will actually go out, without revealing credentials.
+
+    Reported at startup and on GET / because a mis-set mail config is
+    invisible from outside until a user tries to sign up and gets stuck
+    with no way to verify."""
+    if os.environ.get("RESEND_API_KEY"):
+        return {"email": "resend", "configured": True}
+    host = os.environ.get("SMTP_HOST")
+    user = os.environ.get("SMTP_USER")
+    password = os.environ.get("SMTP_PASSWORD")
+    if host and user and password:
+        return {"email": "smtp", "configured": True, "host": host}
+    return {"email": "unconfigured", "configured": False}
+
+
+def _send_via_resend(to: str, subject: str, text: str, html: str) -> None:
+    """Send over Resend's HTTPS API.
+
+    This exists because many hosting platforms — Render's free tier among
+    them — block outbound SMTP ports to stop spam. Credentials that work
+    perfectly from a laptop then fail on the deployed backend, which is
+    indistinguishable from a wrong password unless you know to look for it.
+    An HTTPS API is not blocked anywhere, so it works on any host.
+    """
+    api_key = os.environ["RESEND_API_KEY"]
+    # Resend only accepts a From on a domain you've verified; their shared
+    # onboarding sender works immediately and is the sane default until a
+    # domain is set up.
+    sender = os.environ.get("EMAIL_FROM", "UK Uni Match <onboarding@resend.dev>")
+    payload = json.dumps(
+        {"from": sender, "to": [to], "subject": subject, "text": text, "html": html}
+    ).encode("utf-8")
+
+    request = urllib.request.Request(
+        "https://api.resend.com/emails",
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            response.read()
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="ignore")[:300]
+        raise RuntimeError(f"Resend rejected the message ({exc.code}): {detail}") from exc
+
+
+def _send_via_smtp(to: str, subject: str, text: str, html: str) -> None:
+    host, port, user, password = _smtp_config()
+    message = MIMEMultipart("alternative")
+    message["Subject"] = subject
+    message["From"] = os.environ.get("EMAIL_FROM") or f"UK Uni Match <{user}>"
+    message["To"] = to
+    message.attach(MIMEText(text, "plain"))
+    message.attach(MIMEText(html, "html"))
+
+    with smtplib.SMTP(host, port, timeout=SMTP_TIMEOUT_SECONDS) as server:
+        server.starttls()
+        server.login(user, password)
+        server.sendmail(user, to, message.as_string())
 
 
 def _render_html(purpose: str, code: str) -> str:
@@ -110,17 +184,15 @@ def _render_html(purpose: str, code: str) -> str:
 
 
 def send_otp_email(to: str, code: str, purpose: str) -> None:
-    host, port, user, password = _smtp_config()
+    """Deliver a one-time code. Raises on failure; routes_auth decides what
+    the user sees. Resend is preferred when configured because it survives
+    hosts that block SMTP; otherwise this falls back to SMTP."""
     intro = _INTROS.get(purpose, "Use this code to continue:")
+    subject = _SUBJECTS.get(purpose, "Your UK Uni Match verification code")
+    text = f"{intro}\n\n{code}\n\nThis code expires in 10 minutes."
+    html = _render_html(purpose, code)
 
-    message = MIMEMultipart("alternative")
-    message["Subject"] = _SUBJECTS.get(purpose, "Your UK Uni Match verification code")
-    message["From"] = f"UK Uni Match <{user}>"
-    message["To"] = to
-    message.attach(MIMEText(f"{intro}\n\n{code}\n\nThis code expires in 10 minutes.", "plain"))
-    message.attach(MIMEText(_render_html(purpose, code), "html"))
-
-    with smtplib.SMTP(host, port) as server:
-        server.starttls()
-        server.login(user, password)
-        server.sendmail(user, to, message.as_string())
+    if os.environ.get("RESEND_API_KEY"):
+        _send_via_resend(to, subject, text, html)
+        return
+    _send_via_smtp(to, subject, text, html)

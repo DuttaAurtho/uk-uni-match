@@ -10,6 +10,7 @@ from pydantic import BaseModel
 
 import dashboard_db
 import db
+import email_client
 import gemini_client
 from deps import get_current_user_optional
 from routes_admin import router as admin_router
@@ -59,15 +60,30 @@ CACHE_REFRESH_INTERVAL_SECONDS = 30 * 60
 
 
 @app.on_event("startup")
-async def _warn_if_storage_is_ephemeral():
-    """Say loudly, once, if this deployment will lose its users.
+async def _report_infrastructure():
+    """Say loudly, once, if this deployment cannot keep or reach its users.
 
-    Without Turso credentials the app falls back to a local SQLite file. That
-    is correct for local development and quietly destructive in production:
-    hosts like Render and Railway give each deploy a fresh filesystem, so
-    every account created since the last deploy disappears with it, and the
-    only symptom users see is being unable to sign in to an account they
-    definitely created."""
+    Both failures below are silent by design of their fallbacks, and both
+    surface only as a confused user: an unverifiable signup when mail cannot
+    go out, and an account that "already exists" but cannot be logged into
+    when the database is a file the host throws away on the next deploy."""
+    mail = email_client.describe_backend()
+    if not mail["configured"]:
+        logger.critical(
+            "Email: not configured. Nothing is set for RESEND_API_KEY, nor for "
+            "SMTP_HOST/SMTP_USER/SMTP_PASSWORD, so no user can receive a "
+            "verification code and no one can finish signing up."
+        )
+    elif mail["email"] == "smtp":
+        logger.info(
+            "Email: SMTP via %s. If sends fail only on this host, its outbound "
+            "SMTP ports are probably blocked — set RESEND_API_KEY to send over "
+            "HTTPS instead.",
+            mail.get("host"),
+        )
+    else:
+        logger.info("Email: Resend (HTTPS)")
+
     backend = db.describe_backend()
     if backend["persistent_across_deploys"]:
         logger.info("Database: Turso (persists across deploys)")
@@ -353,6 +369,7 @@ def root():
         "message": "UK University Comparison Tool API is running",
         "storage": backend["storage"],
         "persistent_across_deploys": backend["persistent_across_deploys"],
+        "email": email_client.describe_backend()["email"],
         "university_count": len(UNIVERSITIES),
     }
 
