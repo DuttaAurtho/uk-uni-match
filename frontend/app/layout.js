@@ -1,4 +1,5 @@
 import "./globals.css";
+import { AuthProvider } from "./lib/AuthContext";
 
 export const metadata = {
   title: "UK Uni Match — University Comparison Tool",
@@ -9,7 +10,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

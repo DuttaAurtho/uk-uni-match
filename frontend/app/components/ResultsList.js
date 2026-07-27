@@ -8,6 +8,7 @@ import {
   IconCalendar,
   IconLayoutGrid,
   IconLayoutList,
+  IconStar,
 } from "./icons";
 
 function matchTier(uni, form) {
@@ -59,7 +60,7 @@ function isLive(uni) {
   return typeof uni.data_status === "string" && uni.data_status.startsWith("Live data");
 }
 
-function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect }) {
+function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect, isFavorited, onToggleFavorite }) {
   const tier = matchTier(uni, form);
   const visibleCourses = compact ? uni.courses.slice(0, 3) : uni.courses;
   const remaining = uni.courses.length - visibleCourses.length;
@@ -68,12 +69,27 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect }) {
   return (
     <article
       onClick={() => onSelect(uni)}
-      className="animate-pop-in bg-surface border border-border rounded-xl p-5 card-hover cursor-pointer"
+      className="animate-pop-in bg-surface border border-border rounded-xl p-5 card-hover cursor-pointer relative"
       style={{ animationDelay: `${Math.min(index, 8) * 0.05}s` }}
     >
+      {onToggleFavorite && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(uni);
+          }}
+          aria-label={isFavorited ? "Remove from favorites" : "Add to favorites"}
+          className={`absolute top-4 right-4 transition-colors ${
+            isFavorited ? "text-gold" : "text-text-muted hover:text-gold"
+          }`}
+        >
+          <IconStar width={18} height={18} fill={isFavorited ? "currentColor" : "none"} />
+        </button>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap pr-6">
             <h3 className="font-[family-name:var(--font-display)] text-xl">
               {uni.name}
             </h3>
@@ -174,7 +190,16 @@ function UniCard({ uni, index, form, expanded, onToggle, compact, onSelect }) {
 
 const PAGE_SIZE = 24;
 
-export default function ResultsList({ status, results, form, onRetry, source, onSelectUniversity }) {
+export default function ResultsList({
+  status,
+  results,
+  form,
+  onRetry,
+  source,
+  onSelectUniversity,
+  favoriteIds,
+  onToggleFavorite,
+}) {
   const [sortBy, setSortBy] = useState("match");
   const [compact, setCompact] = useState(false);
   const [expandedIds, setExpandedIds] = useState(() => new Set());
@@ -360,6 +385,8 @@ export default function ResultsList({ status, results, form, onRetry, source, on
             expanded={expandedIds.has(uni.id)}
             onToggle={toggleExpanded}
             onSelect={onSelectUniversity}
+            isFavorited={favoriteIds?.has(uni.id)}
+            onToggleFavorite={onToggleFavorite}
           />
         ))}
       </div>

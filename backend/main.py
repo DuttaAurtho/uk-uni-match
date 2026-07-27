@@ -3,12 +3,17 @@ import os
 from typing import Any, Dict, List, Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Query
+from fastapi import Depends, FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+import dashboard_db
 import db
 import gemini_client
+from deps import get_current_user_optional
+from routes_admin import router as admin_router
+from routes_auth import router as auth_router
+from routes_dashboard import router as dashboard_router
 
 load_dotenv()
 
@@ -34,7 +39,15 @@ app.add_middleware(
     allow_origin_regex=r"https://.*\.vercel\.app",
     allow_methods=["*"],
     allow_headers=["*"],
+    # Needed so the browser sends/accepts the httpOnly session cookie set by
+    # routes_auth.py. Safe alongside allow_origins being an explicit list
+    # (rather than "*"), which is a hard requirement when credentials are on.
+    allow_credentials=True,
 )
+
+app.include_router(auth_router)
+app.include_router(dashboard_router)
+app.include_router(admin_router)
 
 # ---------------------------------------------------------------------------
 # The full set of UK universities. Every search filters this list; the
@@ -163,11 +176,18 @@ def _as_result(uni: dict) -> dict:
 def _attach_official(results: List[dict], source_rows: List[dict]) -> None:
     """Copy the official statistics onto results built elsewhere, matching on
     name. Every result carries an `official` key (possibly None) so the
-    frontend never has to distinguish 'no data' from 'field absent'."""
+    frontend never has to distinguish 'no data' from 'field absent'.
+
+    Also overwrites `id` with the matched row's real database id: the
+    enrichment path (gemini_client) builds its own dicts and stamps them
+    with a slugified name as a placeholder `id`, which isn't the id
+    favorites/todos/requirements need to reference this university by."""
     by_name = {u["name"].strip().lower(): u for u in source_rows}
     for result in results:
         row = by_name.get((result.get("name") or "").strip().lower())
         result["official"] = _official_block(row) if row else None
+        if row:
+            result["id"] = row["id"]
 
 
 def _official_block(uni: dict) -> Optional[dict]:
@@ -219,6 +239,18 @@ def root():
     return {"status": "ok", "message": "UK University Comparison Tool API is running"}
 
 
+def _log_history_if_logged_in(user, gpa, ielts, budget, course, city, result_count):
+    """Best-effort: a logged-in user's search history is a convenience
+    feature, not a critical path, so a DB hiccup here must never break the
+    actual search response."""
+    if not user:
+        return
+    try:
+        dashboard_db.log_search(user["id"], gpa, ielts, budget, course, city, result_count)
+    except Exception:
+        logger.exception("Failed to log search history for user %s", user["id"])
+
+
 @app.get("/universities")
 def get_universities(
     gpa: Optional[float] = Query(None, description="Student's GPA out of 5.0"),
@@ -226,9 +258,11 @@ def get_universities(
     budget: Optional[float] = Query(None, description="Max annual tuition budget in GBP"),
     course: Optional[str] = Query(None, description="Subject/course keyword, e.g. 'Computer Science'"),
     city: Optional[str] = Query(None, description="Preferred city or region, e.g. 'London'"),
+    user=Depends(get_current_user_optional),
 ):
     candidates = _rank(_filter_universities(gpa, ielts, budget, course, city), gpa, ielts)
     if not candidates:
+        _log_history_if_logged_in(user, gpa, ielts, budget, course, city, 0)
         return {"count": 0, "results": [], "source": "none", "enriched_count": 0}
 
     top, rest = candidates[:ENRICH_LIMIT], candidates[ENRICH_LIMIT:]
@@ -243,6 +277,7 @@ def get_universities(
     except Exception:
         logger.exception("search_universities failed, serving estimated data only")
         results = [_as_result(u) for u in candidates]
+        _log_history_if_logged_in(user, gpa, ielts, budget, course, city, len(results))
         return {
             "count": len(results),
             "results": results,
@@ -256,6 +291,7 @@ def get_universities(
     remainder = [u for u in top if u["name"].strip().lower() not in enriched_names] + rest
 
     results = enriched + [_as_result(u) for u in remainder]
+    _log_history_if_logged_in(user, gpa, ielts, budget, course, city, len(results))
     return {
         "count": len(results),
         "results": results,

@@ -68,6 +68,102 @@ MIGRATIONS = [
     """,
     "CREATE INDEX idx_universities_name ON universities(name)",
     "CREATE INDEX idx_universities_ukprn ON universities(ukprn)",
+    # 4 — accounts, OTP verification, and the user dashboard/admin/chat
+    # features built on top of them. One admin account (seeded via
+    # scripts/create_admin.py) shares this same table via `role`.
+    """
+    CREATE TABLE users (
+        id              INTEGER PRIMARY KEY,
+        email           TEXT    NOT NULL UNIQUE,
+        password_hash   TEXT    NOT NULL,
+        role            TEXT    NOT NULL DEFAULT 'user',
+        is_verified     INTEGER NOT NULL DEFAULT 0,
+        avatar_seed     TEXT,
+        created_at      TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    "CREATE INDEX idx_users_email ON users(email)",
+    # 5 — OTP codes for email verification and password reset. Only the
+    # SHA-256 hash of the code is stored; `attempts` caps brute force at the
+    # application layer (see auth.py).
+    """
+    CREATE TABLE otp_codes (
+        id           INTEGER PRIMARY KEY,
+        user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        code_hash    TEXT    NOT NULL,
+        purpose      TEXT    NOT NULL,
+        attempts     INTEGER NOT NULL DEFAULT 0,
+        expires_at   TEXT    NOT NULL,
+        consumed_at  TEXT,
+        created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    "CREATE INDEX idx_otp_user_purpose ON otp_codes(user_id, purpose)",
+    # 6 — one row per /universities search made while logged in.
+    """
+    CREATE TABLE search_history (
+        id            INTEGER PRIMARY KEY,
+        user_id       INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        gpa           REAL,
+        ielts         REAL,
+        budget        REAL,
+        course        TEXT,
+        city          TEXT,
+        result_count  INTEGER,
+        created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    "CREATE INDEX idx_history_user ON search_history(user_id)",
+    # 7 — a user's favourited/whitelisted universities.
+    """
+    CREATE TABLE favorites (
+        id             INTEGER PRIMARY KEY,
+        user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        university_id  INTEGER NOT NULL REFERENCES universities(id) ON DELETE CASCADE,
+        created_at     TEXT    NOT NULL DEFAULT (datetime('now')),
+        UNIQUE(user_id, university_id)
+    )
+    """,
+    "CREATE INDEX idx_favorites_user ON favorites(user_id)",
+    # 8 — a user's to-do list, optionally scoped to one university.
+    """
+    CREATE TABLE todos (
+        id             INTEGER PRIMARY KEY,
+        user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title          TEXT    NOT NULL,
+        is_done        INTEGER NOT NULL DEFAULT 0,
+        due_date       TEXT,
+        university_id  INTEGER REFERENCES universities(id) ON DELETE SET NULL,
+        created_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    "CREATE INDEX idx_todos_user ON todos(user_id)",
+    # 9 — per-user, per-university application document checklist.
+    """
+    CREATE TABLE university_requirements (
+        id             INTEGER PRIMARY KEY,
+        user_id        INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        university_id  INTEGER NOT NULL REFERENCES universities(id) ON DELETE CASCADE,
+        document_name  TEXT    NOT NULL,
+        is_ready       INTEGER NOT NULL DEFAULT 0,
+        notes          TEXT,
+        created_at     TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    "CREATE INDEX idx_requirements_user_uni ON university_requirements(user_id, university_id)",
+    # 10 — one thread per user, mixing messages from both sides; `user_id`
+    # always names the non-admin party in the thread.
+    """
+    CREATE TABLE chat_messages (
+        id           INTEGER PRIMARY KEY,
+        user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        sender_role  TEXT    NOT NULL,
+        body         TEXT    NOT NULL,
+        read_at      TEXT,
+        created_at   TEXT    NOT NULL DEFAULT (datetime('now'))
+    )
+    """,
+    "CREATE INDEX idx_chat_user ON chat_messages(user_id)",
 ]
 
 
@@ -173,14 +269,96 @@ def load_universities(conn: Optional[sqlite3.Connection] = None) -> List[Dict[st
             conn.close()
 
 
+# Fields the admin panel may write. `ukprn` and the `official_*` columns are
+# intentionally excluded — those are only ever set by scripts/sync_discover_uni.py.
+_EDITABLE_UNIVERSITY_FIELDS = (
+    "name", "city", "min_gpa", "min_ielts", "annual_tuition_gbp",
+    "scholarship", "intakes", "courses", "data_status",
+)
+
+
+def _encode_university_fields(fields: Dict[str, Any]) -> Dict[str, Any]:
+    encoded = {k: v for k, v in fields.items() if k in _EDITABLE_UNIVERSITY_FIELDS}
+    for column in _JSON_COLUMNS:
+        if column in encoded:
+            encoded[column] = json.dumps(encoded[column] or [])
+    return encoded
+
+
+def insert_university(fields: Dict[str, Any], conn: Optional[sqlite3.Connection] = None) -> int:
+    """Create a new university row. Returns the new id."""
+    own = conn is None
+    conn = conn or connect()
+    try:
+        data = _encode_university_fields(fields)
+        columns = list(data.keys())
+        placeholders = ", ".join("?" for _ in columns)
+        cur = conn.execute(
+            f"INSERT INTO universities ({', '.join(columns)}) VALUES ({placeholders})",
+            [data[c] for c in columns],
+        )
+        conn.commit()
+        return cur.lastrowid
+    finally:
+        if own:
+            conn.close()
+
+
+def update_university(
+    uni_id: int, fields: Dict[str, Any], conn: Optional[sqlite3.Connection] = None
+) -> bool:
+    """Patch an existing university row. Returns False if no row matched."""
+    own = conn is None
+    conn = conn or connect()
+    try:
+        data = _encode_university_fields(fields)
+        if not data:
+            return False
+        set_clause = ", ".join(f"{c} = ?" for c in data)
+        cur = conn.execute(
+            f"UPDATE universities SET {set_clause} WHERE id = ?",
+            [*data.values(), uni_id],
+        )
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        if own:
+            conn.close()
+
+
+def delete_university(uni_id: int, conn: Optional[sqlite3.Connection] = None) -> bool:
+    own = conn is None
+    conn = conn or connect()
+    try:
+        cur = conn.execute("DELETE FROM universities WHERE id = ?", (uni_id,))
+        conn.commit()
+        return cur.rowcount > 0
+    finally:
+        if own:
+            conn.close()
+
+
+# The dataset list handed out by init(). main.py holds this same list object
+# as its module-level `UNIVERSITIES`; refresh() mutates it in place so that
+# reference sees admin CRUD writes immediately, with no import back into main.
+_cache: List[Dict[str, Any]] = []
+
+
+def refresh(conn: Optional[sqlite3.Connection] = None) -> List[Dict[str, Any]]:
+    """Reload every university from disk into the shared cache, in place."""
+    _cache[:] = load_universities(conn)
+    return _cache
+
+
 def init() -> List[Dict[str, Any]]:
-    """Migrate, seed if empty, and return the dataset. Safe to call at import."""
+    """Migrate, seed if empty, and return the shared cached dataset. Safe to
+    call at import."""
     conn = connect()
     try:
         migrate(conn)
         count = conn.execute("SELECT COUNT(*) AS n FROM universities").fetchone()["n"]
         if count == 0:
             seed_from_json(conn)
-        return load_universities(conn)
+        return refresh(conn)
     finally:
         conn.close()

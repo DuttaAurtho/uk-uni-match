@@ -205,3 +205,76 @@ export function IconExternalLink(props) {
     </svg>
   );
 }
+
+export function IconUser(props) {
+  return (
+    <svg {...base(props)}>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21v-1c0-3.3 3.6-6 8-6s8 2.7 8 6v1" />
+    </svg>
+  );
+}
+
+export function IconLogout(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <path d="M16 17l5-5-5-5" />
+      <path d="M21 12H9" />
+    </svg>
+  );
+}
+
+export function IconCheck(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+export function IconTrash(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M3 6h18" />
+      <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6" />
+    </svg>
+  );
+}
+
+export function IconPlus(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+
+export function IconEdit(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
+export function IconStar(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="m12 2 3.1 6.6 7.2.9-5.3 5 1.4 7.1-6.4-3.6-6.4 3.6 1.4-7.1-5.3-5 7.2-.9Z" />
+    </svg>
+  );
+}
+
+export function IconShuffle(props) {
+  return (
+    <svg {...base(props)}>
+      <path d="m18 4 3 3-3 3" />
+      <path d="M2 7h4.5c1.4 0 2.7.7 3.5 1.9L15 17.1c.8 1.2 2.1 1.9 3.5 1.9H21" />
+      <path d="m18 20 3-3-3-3" />
+      <path d="M2 17h4.5c1.4 0 2.7-.7 3.5-1.9l.6-.9" />
+      <path d="M12.6 8.9 13 8" />
+    </svg>
+  );
+}
