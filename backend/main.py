@@ -49,6 +49,14 @@ app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(admin_router)
 
+
+@app.on_event("shutdown")
+def _shutdown_db():
+    # The shared Turso client (see db._get_turso_client) holds a non-daemon
+    # background thread; without this, --reload restarts and graceful stops
+    # leave that thread (and the process) running instead of exiting.
+    db.shutdown()
+
 # ---------------------------------------------------------------------------
 # The full set of UK universities. Every search filters this list; the
 # best-matching few are then enriched with live data (see ENRICH_LIMIT), and

@@ -20,8 +20,14 @@ schema_version. Nothing else in the app needs an ORM for a table this size.
 import json
 import os
 import sqlite3
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+import libsql_client
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BACKEND_DIR = Path(__file__).parent
 DB_PATH = Path(os.environ.get("DATABASE_PATH", BACKEND_DIR / "universities.db"))
@@ -167,7 +173,102 @@ MIGRATIONS = [
 ]
 
 
-def connect() -> sqlite3.Connection:
+class _TursoCursor:
+    """Mimics just enough of sqlite3's cursor surface (fetchone/fetchall/
+    lastrowid/rowcount) for the rest of this codebase to not notice which
+    backend it's talking to. Rows come back as plain dicts (via `Row.asdict`)
+    rather than sqlite3.Row, but every call site already does `row["col"]` or
+    `dict(row)`, both of which work identically on a plain dict."""
+
+    def __init__(self, result_set: "libsql_client.ResultSet"):
+        self._rows = [row.asdict() for row in result_set.rows]
+        self._pos = 0
+        self.lastrowid = result_set.last_insert_rowid
+        self.rowcount = result_set.rows_affected
+
+    def fetchone(self) -> Optional[Dict[str, Any]]:
+        if self._pos >= len(self._rows):
+            return None
+        row = self._rows[self._pos]
+        self._pos += 1
+        return row
+
+    def fetchall(self) -> List[Dict[str, Any]]:
+        rest = self._rows[self._pos:]
+        self._pos = len(self._rows)
+        return rest
+
+
+class _TursoConnection:
+    """Thin wrapper around libsql_client's sync HTTP client so db.py/auth.py/
+    dashboard_db.py can keep using the exact same `conn.execute(...)`,
+    `conn.commit()`, `conn.close()` calls they use against local sqlite3.
+    Each statement is committed by Turso as it runs (no local transaction
+    buffering here), so `commit()` is a no-op kept only for API compatibility.
+
+    Wraps the single process-wide client from `_get_turso_client()` rather
+    than opening its own — `create_client_sync` spins up a background
+    asyncio thread per client, and this app calls `db.connect()` once or
+    more per request, so a fresh client per call quickly piles up
+    concurrent event-loop threads and starts hanging under load. `close()`
+    is a no-op here too, since the shared client outlives any one request."""
+
+    def __init__(self, client: "libsql_client.SyncClient"):
+        self._client = client
+
+    def execute(self, sql: str, params=()) -> _TursoCursor:
+        return _TursoCursor(self._client.execute(sql, list(params)))
+
+    def commit(self) -> None:
+        pass
+
+    def close(self) -> None:
+        pass
+
+
+_turso_client = None
+_turso_client_lock = threading.Lock()
+
+
+def _get_turso_client(url: str, auth_token: str) -> "libsql_client.SyncClient":
+    global _turso_client
+    if _turso_client is None:
+        with _turso_client_lock:
+            if _turso_client is None:
+                # libsql:// is a websocket scheme; some sandboxed/proxied
+                # networks block the websocket upgrade (seen in this repo's
+                # own dev environment), and the HTTP-based Hrana protocol
+                # behind https:// works identically for everything here.
+                http_url = url.replace("libsql://", "https://", 1)
+                _turso_client = libsql_client.create_client_sync(url=http_url, auth_token=auth_token)
+    return _turso_client
+
+
+def shutdown() -> None:
+    """Close the shared Turso client's background thread. The FastAPI
+    server never needs this — its process lifetime is the client's lifetime
+    — but standalone scripts (create_admin.py, sync_discover_uni.py) must
+    call this before exiting, or that non-daemon thread keeps the process
+    alive indefinitely even after the script's own work is done."""
+    global _turso_client
+    if _turso_client is not None:
+        _turso_client.close()
+        _turso_client = None
+
+
+def connect():
+    """A local sqlite3 file by default; a remote Turso database if
+    TURSO_DATABASE_URL/TURSO_AUTH_TOKEN are set (see .env.example) — that's
+    how the production deploy gets a database that survives redeploys on a
+    host with an ephemeral filesystem, without local dev needing an account."""
+    turso_url = os.environ.get("TURSO_DATABASE_URL")
+    turso_token = os.environ.get("TURSO_AUTH_TOKEN")
+    if turso_url and turso_token:
+        client = _get_turso_client(turso_url, turso_token)
+        conn = _TursoConnection(client)
+        conn.execute("PRAGMA foreign_keys = ON")
+        return conn
+
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")

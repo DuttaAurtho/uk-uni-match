@@ -36,10 +36,13 @@ def main() -> int:
     if len(args.password) < 8:
         parser.error("Password must be at least 8 characters")
 
-    db.migrate()
-    user_id = auth.upsert_admin(args.email.strip().lower(), args.password)
-    print(f"Admin account ready: {args.email} (user id {user_id})")
-    return 0
+    try:
+        db.migrate()
+        user_id = auth.upsert_admin(args.email.strip().lower(), args.password)
+        print(f"Admin account ready: {args.email} (user id {user_id})")
+        return 0
+    finally:
+        db.shutdown()
 
 
 if __name__ == "__main__":
